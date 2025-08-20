@@ -475,53 +475,14 @@
                     <label for="timesheet-description">Descripción del trabajo:</label>
                     <textarea id="timesheet-description" placeholder="Describe el trabajo realizado...">${issueInfo.titulo}</textarea>
                 </div>
-                <div class="container">
-                  	<div class="row">
-              		  	<div class="col-md-6 col-md-offset-3">
-              			  	<div class="panel panel-login">
-              				  	<div class="panel-heading">
-              					  	<div class="row">
-              						  	<div class="col-xs-6">
-              							  	<a class="active" id="login-form-link">Login</a>
-              							  </div>
-              							  <div class="col-xs-6">
-              							  	<a id="register-form-link">Register</a>
-              							  </div>
-              						  </div>
-              						  <hr>
-              					  </div>
-              				  	<div class="panel-body">
-              				  		<div class="row">
-              				  			<div class="col-lg-12">
-              				  				<div>
-                                  <div class="timesheet-form-group">
-                                      <label for="timesheet-hours">Tiempo trabajado:</label>
-                                      <input type="text" id="timesheet-hours" placeholder="ej: 2:30 o 2.5" pattern="^([0-9]{1,2}:[0-5][0-9]|[0-9]*\.?[0-9]+)$">
-                                      <small style="color: #666; font-size: 11px;">Formato: HH:MM (ej: 2:30) o decimal (ej: 2.5)</small>
-                                  </div>
-                                  <div class="timesheet-form-group">
-                                      <label for="timesheet-date">Fecha:</label>
-                                      <input type="date" id="timesheet-date" value="${new Date().toISOString().split('T')[0]}">
-                                  </div>
-                                </div>
-              						  		<--->
-              	  						</div>
-              		  				</div>
-              			  		</div>
-              		  		</div>
-              	  		</div>
-                		</div>
-                	</div>
-                  <div>
-                    <div class="timesheet-form-group">
-                        <label for="timesheet-hours">Tiempo trabajado:</label>
-                        <input type="text" id="timesheet-hours" placeholder="ej: 2:30 o 2.5" pattern="^([0-9]{1,2}:[0-5][0-9]|[0-9]*\.?[0-9]+)$">
-                        <small style="color: #666; font-size: 11px;">Formato: HH:MM (ej: 2:30) o decimal (ej: 2.5)</small>
-                    </div>
-                    <div class="timesheet-form-group">
-                        <label for="timesheet-date">Fecha:</label>
-                        <input type="date" id="timesheet-date" value="${new Date().toISOString().split('T')[0]}">
-                    </div>
+                <div class="timesheet-form-group">
+                    <label for="timesheet-hours">Tiempo trabajado:</label>
+                    <input type="text" id="timesheet-hours" placeholder="ej: 2:30 o 2.5" pattern="^([0-9]{1,2}:[0-5][0-9]|[0-9]*\.?[0-9]+)$">
+                    <small style="color: #666; font-size: 11px;">Formato: HH:MM (ej: 2:30) o decimal (ej: 2.5)</small>
+                </div>
+                <div class="timesheet-form-group">
+                    <label for="timesheet-date">Fecha:</label>
+                    <input type="date" id="timesheet-date" value="${new Date().toISOString().split('T')[0]}">
                 </div>
                 <div class="timesheet-buttons">
                     <button class="timesheet-btn timesheet-btn-primary" id="timesheet-submit">✅ Crear Parte</button>
