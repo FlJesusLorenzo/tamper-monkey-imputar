@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      1.1.2
+// @version      1.1.3
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
 // @match        https://git.factorlibre.com/*/issues/*
@@ -462,7 +462,7 @@
         popup.className = 'timesheet-popup';
 
         popup.innerHTML = `
-                <div style="display: flex"><button id="setup-config" class="timesheet-btn timesheet-btn-secondary">⚙️</button><h3>📝 Crear Parte de Horas</h3><div>
+                <div style="display: flex"><button id="setup-config" class="timesheet-btn timesheet-btn-secondary">⚙️</button><h3>📝 Crear Parte de Horas</h3></div>
                 <div class="timesheet-info">
                     <strong>Proyecto:</strong> ${issueInfo.proyecto}<br>
                     <strong>Tarea:</strong> #${issueInfo.tarea}<br>
