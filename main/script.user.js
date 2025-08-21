@@ -25,19 +25,16 @@
         LANG: 'es_ES',
         TIMEZONE: 'Europe/Madrid'
     };
-  
+
     function showInitialSetup() {
         const dbName = CONFIG.DB_NAME;
         const odooUrl = CONFIG.ODOO_URL;
-        
         if (!dbName || dbName === '' || odooUrl.includes('example.com')) {
             const userDb = prompt(`Configuración inicial:\n\nIntroduce el nombre de tu base de datos Odoo:`);
             const userUrl = prompt(`Introduce la URL de tu instancia Odoo:\n(ejemplo: https://mi-empresa.odoo.com)`);
-            
             if (userDb && userUrl) {
                 GM_setValue('db_name', userDb);
                 GM_setValue('odoo_url', userUrl.replace(/\/$/, ''));
-                
                 alert('¡Configuración guardada! El script está listo para usar.');
                 location.reload();
                 return false;
@@ -48,28 +45,28 @@
         }
         return true;
     }
-  
+
     if (!showInitialSetup()) {
         return;
     }
-  
+
     CONFIG.ODOO_URL = GM_getValue('odoo_url', CONFIG.ODOO_URL);
     CONFIG.DB_NAME = GM_getValue('db_name', CONFIG.DB_NAME);
-  
+
     function showConfigMenu() {
         const currentUrl = GM_getValue('odoo_url', '');
         const currentDb = GM_getValue('db_name', '');
-        
+
         const newUrl = prompt(`URL actual de Odoo: ${currentUrl}\n\nIntroduce nueva URL (o deja vacío para mantener):`, currentUrl);
         if (newUrl !== null && newUrl.trim() !== '') {
             GM_setValue('odoo_url', newUrl.replace(/\/$/, ''));
         }
-        
+
         const newDb = prompt(`Base de datos actual: ${currentDb}\n\nIntroduce nueva base de datos (o deja vacío para mantener):`, currentDb);
         if (newDb !== null && newDb.trim() !== '') {
             GM_setValue('db_name', newDb);
         }
-        
+
         alert('Configuración actualizada. Recarga la página para aplicar cambios.');
     }
 
@@ -465,7 +462,7 @@
         popup.className = 'timesheet-popup';
 
         popup.innerHTML = `
-                <h3>📝 Crear Parte de Horas</h3>
+                <button id="setup-config" class="timesheet-config-btn">'⚙️'</button><h3>📝 Crear Parte de Horas</h3>
                 <div class="timesheet-info">
                     <strong>Proyecto:</strong> ${issueInfo.proyecto}<br>
                     <strong>Tarea:</strong> #${issueInfo.tarea}<br>
@@ -494,11 +491,8 @@
 
         document.body.appendChild(overlay);
         document.body.appendChild(popup);
-      
-        const configButton = document.createElement('button')
-        configButton.className = 'timesheet-config-btn';
-        configButton.innerHTML = '⚙️';
-        configButton.title = 'Configurar Odoo';
+
+        const configButton = document.getElementById('setup-config')
 
         const timeField = document.getElementById('timesheet-description');
         timeField.focus();
