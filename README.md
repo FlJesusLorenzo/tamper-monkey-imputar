@@ -23,7 +23,7 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 ## Instalación
 
 1. Instala la extensión [Tampermonkey](https://www.tampermonkey.net/) en tu navegador
-2. Utiliza este enlace para instalar el script - [script.user](https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/new_redirection/main/script.user.js)
+2. Utiliza este enlace para instalar el script - [script.user](https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js)
 3. Cada vez que se realicen mejoras, para actualizar, deberás pulsar en:
 <img width="336" height="342" alt="image" src="https://github.com/user-attachments/assets/570281f0-45eb-4bbd-a218-01abeb19001f" />
 
