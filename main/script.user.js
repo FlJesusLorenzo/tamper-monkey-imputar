@@ -523,7 +523,7 @@
         document.getElementById('timesheet-cancel').addEventListener('click', closeTimesheetPopup);
         overlay.addEventListener('click', closeTimesheetPopup);
         document.getElementById('timesheet-odoo').addEventListener('click', () => {
-            window.open("https://odoo.factorlibre.com/web#view_type=list&model=account.analytic.line&action=976")
+            window.open(`${CONFIG.ODOO_URL}/web#view_type=list&model=account.analytic.line&action=976`)
         });
         document.getElementById('timesheet-submit').addEventListener('click', async () => {
             const description = document.getElementById('timesheet-description').value.trim();
