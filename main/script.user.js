@@ -4,7 +4,8 @@
 // @version      1.1.7
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
-// @match        https://git.*.com/*/issues/*
+// @match        https://git.*
+// @include      */issues/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=factorlibre.com
 // @grant        GM_setValue
 // @grant        GM_getValue
