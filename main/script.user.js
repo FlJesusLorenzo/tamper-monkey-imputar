@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      1.1.6
+// @version      1.1.7
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
-// @match        https://git.factorlibre.com/*/issues/*
+// @match        https://git.*.com/*/issues/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=factorlibre.com
 // @grant        GM_setValue
 // @grant        GM_getValue
