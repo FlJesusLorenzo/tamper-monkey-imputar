@@ -38,6 +38,8 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
    - ⚠️ **Importante**: La URL debe comenzar con `http://` o `https://`
 <img width="408" height="247" alt="image" src="https://github.com/user-attachments/assets/1cfb9cff-ae5e-4206-9153-c3aa4b9b6a56" />
 
+3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
+
 ## Uso
 
 ### Funcionamiento Automático
