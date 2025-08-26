@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup
+// @name         Imputaciones con OdooRPC - Popup - dev
 // @namespace    http://tampermonkey.net/
 // @version      2.0.1
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
@@ -12,8 +12,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/mejoras_horas/main/script.user.js
+// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/mejoras_horas/main/script.user.js
 // ==/UserScript==
 
 (function () {
@@ -458,6 +458,87 @@
           100% {
               transform: translate(-50%, -50%) rotate(360deg);
           }
+        .tab.active {
+            background: white;
+            color: #333;
+            font-weight: 500;
+        .form-container {
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+        .form-tabs {
+            display: flex;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .tab.active {
+            background: #A0A0A0;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-content {
+            padding: 30px;
+            min-height: 250px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+        
+        input[type="time"]::-webkit-datetime-edit {
+            color: #333;
+        }
+
+        input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+            background: transparent;
+        }
+
+        input[type="time"]::-webkit-datetime-edit-text {
+            color: #666;
+            padding: 0 0.3em;
+        }
+
+        input[type="time"]::-webkit-datetime-edit-month-field,
+        input[type="time"]::-webkit-datetime-edit-day-field,
+        input[type="time"]::-webkit-datetime-edit-year-field,
+        input[type="time"]::-webkit-datetime-edit-hour-field,
+        input[type="time"]::-webkit-datetime-edit-minute-field {
+            color: #333;
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+        }
+
+        @media (max-width: 480px) {
+            .form-content {
+                padding: 20px;
+            }
+            
+            body {
+                padding: 10px;
+            }
         }
     `);
 
@@ -736,10 +817,34 @@
                       issueInfo.titulo
                     }</textarea>
                 </div>
-                <div class="timesheet-form-group">
-                    <label for="timesheet-hours">Tiempo trabajado:</label>
-                    <input type="text" id="timesheet-hours" placeholder="ej: 2:30 o 2.5" pattern="^([0-9]{1,2}:[0-5][0-9]|[0-9]*\.?[0-9]+)$">
-                    <small style="color: #666; font-size: 11px;">Formato: HH:MM (ej: 2:30) o decimal (ej: 2.5)</small>
+                <div class="form-container">
+                    <div class="form-tabs">
+                        <div class="tab active" id="dedicate-tab">Horas dedicadas</div>
+                        <div class="tab" id="start_end-tab">Hora inicio - Hora final</div>
+                    </div>
+                    
+                    <div class="form-content">
+                        <div id="horas">
+                            <div id="form-total" class="form-section active">
+                                <div class="timesheet-form-group">
+                                    <label for="timesheet-hours">Tiempo trabajado:</label>
+                                    <input type="text" id="timesheet-hours" placeholder="ej: 2:30" pattern="^([0-9]{1,2}:[0-5][0-9])$">
+                                    <small style="color: #666; font-size: 11px;">Formato: HH:MM (ej: 02:30)</small>
+                                </div>
+                            </div>
+                            <div id="form-inicio_fin" class="form-section">
+                                <div class="timesheet-form-group">
+                                    <label for="timesheet-start">Hora inicio:</label>
+                                    <input type="text" id="timesheet-start" placeholder="ej: 12:00" pattern="^([0-9][0-9]:[0-5][0-9])$">
+                                </div>
+                                <div class="timesheet-form-group">
+                                    <label for="timesheet-end">Hora final:</label>
+                                    <input type="text" id="timesheet-end" placeholder="ej: 12:30" pattern="^([0-9][0-9]:[0-5][0-9])$">
+                                </div>
+                                <small style="color: #666; font-size: 11px;">El ejemplo actual nos generaria un reporte de 30 minutos</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="timesheet-form-group">
                     <label for="timesheet-date">Fecha:</label>
@@ -792,6 +897,43 @@
       }
     });
 
+    const dedicateTab = document.getElementById("dedicate-tab");
+    const startEndTab = document.getElementById("start_end-tab");
+    const formTotal = document.getElementById("form-total");
+    const formInicioFin = document.getElementById("form-inicio_fin");
+
+    dedicateTab.addEventListener("click", function () {
+      switchTab(dedicateTab, startEndTab, formTotal, formInicioFin);
+    });
+    startEndTab.addEventListener("click", function () {
+      switchTab(startEndTab, dedicateTab, formInicioFin, formTotal);
+    });
+
+    document.getElementById("timesheet-description").focus();
+
+    const timeField = document.getElementById("timesheet-hours");
+    timeField.addEventListener("input", function () {
+      const value = this.value.trim();
+      if (value) {
+        const decimal = parseTimeToDecimal(value);
+        if (decimal !== null) {
+          if (/^\d*\.?\d+$/.test(value)) {
+            this.style.borderColor = "#28a745";
+            this.title = `= ${formatDecimalToTime(decimal)}`;
+          } else {
+            this.style.borderColor = "#28a745";
+            this.title = `= ${decimal.toFixed(2)} horas`;
+          }
+        } else {
+          this.style.borderColor = "#dc3545";
+          this.title = "Formato inválido";
+        }
+      } else {
+        this.style.borderColor = "#ddd";
+        this.title = "";
+      }
+    });
+
     document
       .getElementById("timesheet-cancel")
       .addEventListener("click", closeTimesheetPopup);
@@ -804,55 +946,102 @@
     document
       .getElementById("timesheet-submit")
       .addEventListener("click", async () => {
-        const description = document
-          .getElementById("timesheet-description")
-          .value.trim();
-        const timeInput = document
-          .getElementById("timesheet-hours")
-          .value.trim();
-        let date = document.getElementById("timesheet-date").value;
-        let datetime = formatDate(date);
+        const active = document.querySelectorAll("div.active");
+        let description;
+        let hours;
+        let date;
+        if (active[1].id == "form-total") {
+          description = document
+            .getElementById("timesheet-description")
+            .value.trim();
 
-        if (!description) {
-          showStatus("Por favor, introduce una descripción", "error");
-          return;
+          timeInput = document.getElementById("timesheet-hours").value.trim();
+          date = document.getElementById("timesheet-date").value;
+
+          if (!description) {
+            showStatus("Por favor, introduce una descripción", "error");
+            return;
+          }
+
+          if (!timeInput) {
+            showStatus("Por favor, introduce el tiempo trabajado", "error");
+            return;
+          }
+
+          // Convertir tiempo a decimal
+          hours = parseTimeToDecimal(timeInput);
+          if (hours === null) {
+            showStatus(
+              "Formato de tiempo inválido. Usa HH:MM (ej: 2:30) o decimal (ej: 2.5)",
+              "error"
+            );
+            return;
+          }
+
+          if (hours <= 0 || hours > 24) {
+            showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
+            return;
+          }
+
+          await createTimesheetEntry(issueInfo, description, hours, date);
+        } else if (active[1].id == "form-inicio_fin") {
+          description = document
+            .getElementById("timesheet-description")
+            .value.trim();
+          const timeStartInput = document
+            .getElementById("timesheet-start")
+            .value.trim();
+          const timeEndInput = document
+            .getElementById("timesheet-end")
+            .value.trim();
+          date = document.getElementById("timesheet-date").value;
+          const startHours = parseTimeToDecimal(timeStartInput);
+          const endHours = parseTimeToDecimal(timeEndInput);
+          hours = endHours - startHours;
+
+          if (!description) {
+            showStatus("Por favor, introduce una descripción", "error");
+            return;
+          }
+          if (!timeStartInput) {
+            showStatus("Por favor, introduce la hora de Inicio", "error");
+            return;
+          }
+          if (!timeEndInput) {
+            showStatus("Por favor, introduce la hora de Fin", "error");
+            return;
+          }
+          if (startHours === null || endHours === null) {
+            showStatus(
+              "Formato de tiempo inválido. Usa HH:MM (ej: 2:30)",
+              "error"
+            );
+            return;
+          }
+
+          if (startHours <= 0 || startHours > 24) {
+            showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
+            return;
+          }
+          if (endHours <= 0 || endHours > 24) {
+            showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
+            return;
+          }
+          if (hours <= 0) {
+            showStatus(
+              "La hora de fin debe ser siempre superior a la hora de inicio",
+              "error"
+            );
+            return;
+          }
+
+          await createTimesheetEntry(issueInfo, description, hours, date);
         }
-
-        if (!timeInput) {
-          showStatus("Por favor, introduce el tiempo trabajado", "error");
-          return;
-        }
-
-        // Convertir tiempo a decimal
-        const hours = parseTimeToDecimal(timeInput);
-        if (hours === null) {
-          showStatus(
-            "Formato de tiempo inválido. Usa HH:MM (ej: 2:30) o decimal (ej: 2.5)",
-            "error"
-          );
-          return;
-        }
-
-        if (hours <= 0 || hours > 24) {
-          showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
-          return;
-        }
-
-        await createTimesheetEntry(
-          issueInfo,
-          description,
-          hours,
-          date,
-          datetime
-        );
       });
 
+    // Cerrar con ESC
     document.addEventListener("keydown", function escHandler(e) {
       if (e.key === "Escape") {
-        if (document.getElementById("config-popup")) {
-          closeConfigPopup();
-          return;
-        }
         closeTimesheetPopup();
         document.removeEventListener("keydown", escHandler);
       }
@@ -965,5 +1154,13 @@
       console.error("Error creando timesheet:", error);
       showStatus(`❌ Error: ${error.message}`, "error");
     }
+  }
+
+  function switchTab(activeTab, inactiveTab, activeForm, inactiveForm) {
+    activeTab.classList.add("active");
+    inactiveTab.classList.remove("active");
+
+    activeForm.classList.add("active");
+    inactiveForm.classList.remove("active");
   }
 })();
