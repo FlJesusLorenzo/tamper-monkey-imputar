@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup
+// @name         Imputaciones con OdooRPC - Popup dev
 // @namespace    http://tampermonkey.net/
-// @version      1.1.9
+// @version      1.2.4
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -372,14 +372,16 @@
             });
         }
 
-        async createTimesheetEntry(projectId, taskId, description, hours, date = null) {
+        async createTimesheetEntry(projectId, taskId, description, hours, date = null, datetime = null) {
             const today = date || new Date().toISOString().split('T')[0];
+            const datetime = datetime || formatDate(new Date())
 
             const timesheetData = {
                 project_id: projectId,
                 name: description,
                 unit_amount: parseFloat(hours),
                 date: today,
+                datetime: datetime,
                 user_id: this.uid
             };
 
@@ -480,7 +482,7 @@
                 </div>
                 <div class="timesheet-form-group">
                     <label for="timesheet-date">Fecha:</label>
-                    <input type="date" id="timesheet-date" value="${new Date().toISOString().split('T')[0]}">
+                    <input type="date" id="timesheet-date" value="${new Date().toISOString()}">
                 </div>
                 <div class="timesheet-buttons">
                     <button class="timesheet-btn timesheet-btn-primary" id="timesheet-submit">✅ Crear Parte</button>
@@ -529,7 +531,8 @@
         document.getElementById('timesheet-submit').addEventListener('click', async () => {
             const description = document.getElementById('timesheet-description').value.trim();
             const timeInput = document.getElementById('timesheet-hours').value.trim();
-            const date = document.getElementById('timesheet-date').value;
+            let date = document.getElementById('timesheet-date').value;
+            let datetime = formatDate(date)
 
             if (!description) {
                 showStatus('Por favor, introduce una descripción', 'error');
@@ -553,7 +556,7 @@
                 return;
             }
 
-            await createTimesheetEntry(issueInfo, description, hours, date);
+            await createTimesheetEntry(issueInfo, description, hours, formatDate(date).split(" ")[0], datetime);
         });
 
         // Cerrar con ESC
@@ -577,8 +580,18 @@
         statusDiv.className = `timesheet-${type}`;
         statusDiv.textContent = message;
     }
+    
+    function formatDate(date){
+        if (date == Null) return Null;
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDay();
+        const locale_time = date.toLocaleTimeString();
 
-    async function createTimesheetEntry(issueInfo, description, hours, date) {
+        return `${year}/${month}/${day} ${locale_time}`;
+    }
+    
+    async function createTimesheetEntry(issueInfo, description, hours, date, datetime) {
         try {
             showStatus('🔄 Conectando con Odoo...', 'loading');
 
@@ -636,7 +649,8 @@
                 taskId,
                 description,
                 hours,
-                date
+                date,
+                datetime
             );
 
             if (timesheetId) {
