@@ -16,75 +16,90 @@
 // @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
 // ==/UserScript==
 
-(function() {
-    'use strict';
+(function () {
+  "use strict";
 
-    const CONFIG = {
-        ODOO_URL: GM_getValue('odoo_url', 'https://tu-odoo.example.com'),
-        DB_NAME: GM_getValue('db_name', ''),
-        GITLAB_DOMAIN: 'git.tuempresa.com',
-        LANG: 'es_ES',
-        TIMEZONE: 'Europe/Madrid'
-    };
+  const CONFIG = {
+    ODOO_URL: GM_getValue("odoo_url", "https://tu-odoo.example.com"),
+    DB_NAME: GM_getValue("db_name", ""),
+    GITLAB_DOMAIN: "git.tuempresa.com",
+    LANG: "es_ES",
+    TIMEZONE: "Europe/Madrid",
+  };
 
-    function showInitialSetup() {
-        const dbName = CONFIG.DB_NAME;
-        const odooUrl = CONFIG.ODOO_URL;
-        if (!dbName || dbName === '' || odooUrl.includes('example.com')) {
-            const userDb = prompt(`Configuración inicial:\n\nIntroduce el nombre de tu base de datos Odoo:`);
-            const userUrl = prompt(`Introduce la URL de tu instancia Odoo:\n(ejemplo: https://mi-empresa.odoo.com)`);
-            if (userDb && userUrl) {
-                GM_setValue('db_name', userDb);
-                GM_setValue('odoo_url', userUrl.replace(/\/$/, ''));
-                alert('¡Configuración guardada! El script está listo para usar.');
-                location.reload();
-                return false;
-            } else {
-                alert('Configuración cancelada. El script no funcionará hasta que se configure.');
-                return false;
-            }
-        }
-        return true;
+  function showInitialSetup() {
+    const dbName = CONFIG.DB_NAME;
+    const odooUrl = CONFIG.ODOO_URL;
+    if (!dbName || dbName === "" || odooUrl.includes("example.com")) {
+      const userDb = prompt(
+        `Configuración inicial:\n\nIntroduce el nombre de tu base de datos Odoo:`
+      );
+      const userUrl = prompt(
+        `Introduce la URL de tu instancia Odoo:\n(ejemplo: https://mi-empresa.odoo.com)`
+      );
+      if (userDb && userUrl) {
+        GM_setValue("db_name", userDb);
+        GM_setValue("odoo_url", userUrl.replace(/\/$/, ""));
+        alert("¡Configuración guardada! El script está listo para usar.");
+        location.reload();
+        return false;
+      } else {
+        alert(
+          "Configuración cancelada. El script no funcionará hasta que se configure."
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (!showInitialSetup()) {
+    return;
+  }
+
+  CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
+  CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
+
+  function showConfigMenu() {
+    const currentUrl = GM_getValue("odoo_url", "");
+    const currentDb = GM_getValue("db_name", "");
+
+    const newUrl = prompt(
+      `URL actual de Odoo: ${currentUrl}\n\nIntroduce nueva URL (o deja vacío para mantener):`,
+      currentUrl
+    );
+    if (newUrl !== null && newUrl.trim() !== "") {
+      GM_setValue("odoo_url", newUrl.replace(/\/$/, ""));
     }
 
-    if (!showInitialSetup()) {
-        return;
+    const newDb = prompt(
+      `Base de datos actual: ${currentDb}\n\nIntroduce nueva base de datos (o deja vacío para mantener):`,
+      currentDb
+    );
+    if (newDb !== null && newDb.trim() !== "") {
+      GM_setValue("db_name", newDb);
     }
 
-    CONFIG.ODOO_URL = GM_getValue('odoo_url', CONFIG.ODOO_URL);
-    CONFIG.DB_NAME = GM_getValue('db_name', CONFIG.DB_NAME);
+    alert("Configuración actualizada. Recarga la página para aplicar cambios.");
+  }
 
-    function showConfigMenu() {
-        const currentUrl = GM_getValue('odoo_url', '');
-        const currentDb = GM_getValue('db_name', '');
-
-        const newUrl = prompt(`URL actual de Odoo: ${currentUrl}\n\nIntroduce nueva URL (o deja vacío para mantener):`, currentUrl);
-        if (newUrl !== null && newUrl.trim() !== '') {
-            GM_setValue('odoo_url', newUrl.replace(/\/$/, ''));
-        }
-
-        const newDb = prompt(`Base de datos actual: ${currentDb}\n\nIntroduce nueva base de datos (o deja vacío para mantener):`, currentDb);
-        if (newDb !== null && newDb.trim() !== '') {
-            GM_setValue('db_name', newDb);
-        }
-
-        alert('Configuración actualizada. Recarga la página para aplicar cambios.');
+  window.resetOdooConfig = function () {
+    if (confirm("¿Estás seguro de que quieres resetear la configuración?")) {
+      GM_setValue("db_name", "");
+      GM_setValue("odoo_url", "");
+      alert(
+        "Configuración reseteada. Recarga la página para configurar de nuevo."
+      );
     }
+  };
+  const link = document.createElement("link");
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap";
+  link.rel = "stylesheet";
+  document.head.appendChild(link);
 
-    window.resetOdooConfig = function() {
-        if (confirm('¿Estás seguro de que quieres resetear la configuración?')) {
-            GM_setValue('db_name', '');
-            GM_setValue('odoo_url', '');
-            alert('Configuración reseteada. Recarga la página para configurar de nuevo.');
-        }
-    };
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-
-    // Estilos para el popup
-    GM_addStyle(`
+  // Estilos para el popup
+  GM_addStyle(`
         .timesheet-popup {
             position: fixed;
             top: 50%;
@@ -231,249 +246,273 @@
         }
     `);
 
-    class OdooRPC {
-        constructor() {
-            this.url = CONFIG.ODOO_URL;
-            this.db = CONFIG.DB_NAME;
-            this.sessionId = null;
-            this.uid = null;
-            this.context = {
-                lang: CONFIG.LANG,
-                tz: CONFIG.TIMEZONE
-            };
-        }
+  class OdooRPC {
+    constructor() {
+      this.url = CONFIG.ODOO_URL;
+      this.db = CONFIG.DB_NAME;
+      this.sessionId = null;
+      this.uid = null;
+      this.context = {
+        lang: CONFIG.LANG,
+        tz: CONFIG.TIMEZONE,
+      };
+    }
 
-        async authenticate() {
+    async authenticate() {
+      try {
+        const sessionInfo = await this.getSessionInfo();
+        if (sessionInfo && sessionInfo.uid) {
+          this.uid = sessionInfo.uid;
+          this.sessionId = sessionInfo.session_id;
+          this.context = { ...this.context, uid: this.uid };
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Error en autenticación:", error);
+        return false;
+      }
+    }
+
+    async getSessionInfo() {
+      return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+          method: "POST",
+          url: `${this.url}/web/session/get_session_info`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            jsonrpc: "2.0",
+            method: "call",
+            params: {},
+            id: Math.floor(Math.random() * 1000000000),
+          }),
+          onload: (response) => {
             try {
-                const sessionInfo = await this.getSessionInfo();
-                if (sessionInfo && sessionInfo.uid) {
-                    this.uid = sessionInfo.uid;
-                    this.sessionId = sessionInfo.session_id;
-                    this.context = { ...this.context, uid: this.uid };
-                    return true;
-                }
-                return false;
+              const data = JSON.parse(response.responseText);
+              resolve(data.result);
             } catch (error) {
-                console.error('Error en autenticación:', error);
-                return false;
+              reject(error);
             }
-        }
+          },
+          onerror: reject,
+        });
+      });
+    }
 
-        async getSessionInfo() {
-            return new Promise((resolve, reject) => {
-                GM_xmlhttpRequest({
-                    method: 'POST',
-                    url: `${this.url}/web/session/get_session_info`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    data: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'call',
-                        params: {},
-                        id: Math.floor(Math.random() * 1000000000)
-                    }),
-                    onload: (response) => {
-                        try {
-                            const data = JSON.parse(response.responseText);
-                            resolve(data.result);
-                        } catch (error) {
-                            reject(error);
-                        }
-                    },
-                    onerror: reject
-                });
-            });
-        }
+    async call(model, method, args = [], kwargs = {}) {
+      return new Promise((resolve, reject) => {
+        const payload = {
+          jsonrpc: "2.0",
+          method: "call",
+          params: {
+            model: model,
+            method: method,
+            args: args,
+            kwargs: kwargs,
+          },
+          id: Math.floor(Math.random() * 1000000000),
+        };
 
-        async call(model, method, args = [], kwargs = {}) {
-            return new Promise((resolve, reject) => {
-                const payload = {
-                    jsonrpc: '2.0',
-                    method: 'call',
-                    params: {
-                        model: model,
-                        method: method,
-                        args: args,
-                        kwargs: kwargs
-                    },
-                    id: Math.floor(Math.random() * 1000000000)
-                };
-
-                GM_xmlhttpRequest({
-                    method: 'POST',
-                    url: `${this.url}/web/dataset/call_kw/${model}/${method}`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    data: JSON.stringify(payload),
-                    onload: (response) => {
-                        try {
-                            console.log('RPC Response:', response.responseText);
-                            const data = JSON.parse(response.responseText);
-                            if (data.error) {
-                                console.error('RPC Error:', data.error);
-                                reject(new Error(JSON.stringify(data.error)));
-                            } else {
-                                resolve(data.result);
-                            }
-                        } catch (error) {
-                            console.error('Parse Error:', error);
-                            reject(error);
-                        }
-                    },
-                    onerror: (error) => {
-                        console.error('Request Error:', error);
-                        reject(error);
-                    }
-                });
-            });
-        }
-
-        async nameSearch(model, name, domain = [], limit = 21) {
-            return new Promise((resolve, reject) => {
-                GM_xmlhttpRequest({
-                    method: 'POST',
-                    url: `${this.url}/web/dataset/call_kw/${model}/name_search`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    data: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'call',
-                        params: {
-                            args: [],
-                            model: model,
-                            method: 'name_search',
-                            kwargs: {
-                                name: name,
-                                args: domain,
-                                operator: 'ilike',
-                                limit: limit,
-                                context: this.context
-                            }
-                        },
-                        id: Math.floor(Math.random() * 1000000000)
-                    }),
-                    onload: (response) => {
-                        try {
-                            const data = JSON.parse(response.responseText);
-                            if (data.error) {
-                                reject(new Error(data.error.message));
-                            } else {
-                                resolve(data.result);
-                            }
-                        } catch (error) {
-                            reject(error);
-                        }
-                    },
-                    onerror: reject
-                });
-            });
-        }
-
-        async createTimesheetEntry(projectId, taskId, description, hours, date = null, datetime = null) {
-            const today = date || new Date().toISOString().split('T')[0];
-            const datetime = datetime || formatDate(new Date())
-
-            const timesheetData = {
-                project_id: projectId,
-                name: description,
-                unit_amount: parseFloat(hours),
-                date: today,
-                datetime: datetime,
-                user_id: this.uid
-            };
-
-            if (taskId) {
-                timesheetData.task_id = taskId;
+        GM_xmlhttpRequest({
+          method: "POST",
+          url: `${this.url}/web/dataset/call_kw/${model}/${method}`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify(payload),
+          onload: (response) => {
+            try {
+              console.log("RPC Response:", response.responseText);
+              const data = JSON.parse(response.responseText);
+              if (data.error) {
+                console.error("RPC Error:", data.error);
+                reject(new Error(JSON.stringify(data.error)));
+              } else {
+                resolve(data.result);
+              }
+            } catch (error) {
+              console.error("Parse Error:", error);
+              reject(error);
             }
-
-            console.log('Creating timesheet with data:', timesheetData);
-            return await this.call('account.analytic.line', 'create', [timesheetData]);
-        }
-    }
-    let odooRPC = null;
-
-    odooRPC = new OdooRPC();
-
-    window.addEventListener('load', function() {
-        const sidebar = document.querySelector('.issuable-sidebar-header div[data-testid="sidebar-todo"]');
-        if (sidebar) {
-            const button = document.createElement('button');
-            button.classList.add('btn', 'hide-collapsed', 'btn-default', 'btn-sm', 'gl-button');
-            const span = document.createElement('span');
-            span.innerText = '⏱️ Imputar Horas';
-            button.appendChild(span);
-            button.addEventListener('click', showTimesheetPopup);
-            sidebar.appendChild(button);
-        }
-    });
-
-    function getIssueInfo() {
-        const url = window.location.href.split("/");
-        let proyecto = document.querySelector('div[data-testid="nav-item-link-label"');
-        const tarea = url[7].split("#")[0];
-
-        proyecto = proyecto.textContent.trim()
-        const titleElement = document.querySelector('h1[data-testid="issue-title-text"]') ||
-              document.querySelector('.issue-title-text') ||
-              document.querySelector('h1.title');
-        const titulo = titleElement ? titleElement.textContent.trim() : `Issue #${tarea}`;
-
-        return { proyecto, tarea, titulo };
+          },
+          onerror: (error) => {
+            console.error("Request Error:", error);
+            reject(error);
+          },
+        });
+      });
     }
 
-    function parseTimeToDecimal(timeInput) {
-        timeInput = timeInput.trim();
-
-        if (/^\d*\.?\d+$/.test(timeInput)) {
-            const decimal = parseFloat(timeInput);
-            return (decimal > 0 && decimal <= 24) ? decimal : null;
-        }
-
-        const timeRegex = /^(\d{1,2}):([0-5]\d)$/;
-        const match = timeInput.match(timeRegex);
-
-        if (match) {
-            const hours = parseInt(match[1], 10);
-            const minutes = parseInt(match[2], 10);
-
-            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
-                return hours + (minutes / 60);
+    async odooSearch(model, domain = [], limit = 21, fields = "odoo_id") {
+      return new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+          method: "POST",
+          url: `${this.url}/web/dataset/call_kw/${model}/name_search`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            id: Math.floor(Math.random() * 1000000000),
+            jsonrpc: "2.0",
+            method: "call",
+            params: {
+              context: this.context,
+              model: model,
+              domain: domain,
+              fields: fields,
+              limit: limit,
+              sort: "",
+            },
+          }),
+          onload: (response) => {
+            try {
+              const data = JSON.parse(response.responseText);
+              if (data.error) {
+                reject(new Error(data.error.message));
+              } else {
+                resolve(data.result);
+              }
+            } catch (error) {
+              reject(error);
             }
-        }
-
-        return null;
+          },
+          onerror: reject,
+        });
+      });
     }
 
-    function formatDecimalToTime(decimal) {
-        const hours = Math.floor(decimal);
-        const minutes = Math.round((decimal - hours) * 60);
-        return `${hours}:${minutes.toString().padStart(2, '0')}`;
+    async createTimesheetEntry(
+      projectId,
+      taskId,
+      description,
+      hours,
+      date = null,
+      datetime = null
+    ) {
+      const today = date || new Date().toISOString().split("T")[0];
+      datetime = datetime || formatDate(today);
+
+      const timesheetData = {
+        project_id: projectId,
+        name: description,
+        unit_amount: parseFloat(hours),
+        date: today,
+        datetime: datetime,
+        user_id: this.uid,
+      };
+
+      if (taskId) {
+        timesheetData.task_id = taskId;
+      }
+
+      console.log("Creating timesheet with data:", timesheetData);
+      return await this.call("account.analytic.line", "create", [
+        timesheetData,
+      ]);
+    }
+  }
+  let odooRPC = null;
+
+  odooRPC = new OdooRPC();
+
+  window.addEventListener("load", function () {
+    const sidebar = document.querySelector(
+      '.issuable-sidebar-header div[data-testid="sidebar-todo"]'
+    );
+    if (sidebar) {
+      const button = document.createElement("button");
+      button.classList.add(
+        "btn",
+        "hide-collapsed",
+        "btn-default",
+        "btn-sm",
+        "gl-button"
+      );
+      const span = document.createElement("span");
+      span.innerText = "⏱️ Imputar Horas";
+      button.appendChild(span);
+      button.addEventListener("click", showTimesheetPopup);
+      sidebar.appendChild(button);
+    }
+  });
+
+  function getIssueInfo() {
+    let proyecto = `${document.location.origin}${document
+      .querySelector('div[data-testid="nav-item-link-label"')
+      .parentElement.getAttribute("href")}`;
+    const tarea = window.location.href.split("#")[0];
+
+    const titleElement =
+      document.querySelector('h1[data-testid="issue-title-text"]') ||
+      document.querySelector(".issue-title-text") ||
+      document.querySelector("h1.title");
+    const titulo = titleElement
+      ? titleElement.textContent.trim()
+      : `Issue #${tarea.split("/")[tarea.length - 1]}`;
+
+    return { proyecto, tarea, titulo };
+  }
+
+  function parseTimeToDecimal(timeInput) {
+    timeInput = timeInput.trim();
+
+    if (/^\d*\.?\d+$/.test(timeInput)) {
+      const decimal = parseFloat(timeInput);
+      return decimal > 0 && decimal <= 24 ? decimal : null;
     }
 
-    async function showTimesheetPopup() {
-        const issueInfo = getIssueInfo();
+    const timeRegex = /^(\d{1,2}):([0-5]\d)$/;
+    const match = timeInput.match(timeRegex);
 
-        // Crear overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'timesheet-overlay';
+    if (match) {
+      const hours = parseInt(match[1], 10);
+      const minutes = parseInt(match[2], 10);
 
-        // Crear popup
-        const popup = document.createElement('div');
-        popup.className = 'timesheet-popup';
+      if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+        return hours + minutes / 60;
+      }
+    }
 
-        popup.innerHTML = `
+    return null;
+  }
+
+  function formatDecimalToTime(decimal) {
+    const hours = Math.floor(decimal);
+    const minutes = Math.round((decimal - hours) * 60);
+    return `${hours}:${minutes.toString().padStart(2, "0")}`;
+  }
+
+  async function showTimesheetPopup() {
+    const issueInfo = getIssueInfo();
+
+    // Crear overlay
+    const overlay = document.createElement("div");
+    overlay.className = "timesheet-overlay";
+
+    // Crear popup
+    const popup = document.createElement("div");
+    popup.className = "timesheet-popup";
+
+    popup.innerHTML = `
                 <button id="setup-config" class="timesheet-btn timesheet-btn-secondary">⚙️</button><h3>📝 Crear Parte de Horas</h3>
                 <div class="timesheet-info">
-                    <strong>Proyecto:</strong> ${issueInfo.proyecto}<br>
-                    <strong>Tarea:</strong> #${issueInfo.tarea}<br>
+                    <strong>Proyecto:</strong> ${
+                      issueInfo.proyecto.split("/")[
+                        issueInfo.proyecto.length - 1
+                      ]
+                    }<br>
+                    <strong>Tarea:</strong> #${
+                      issueInfo.tarea.split("/")[issueInfo.tarea.length - 1]
+                    }<br>
                     <strong>Título:</strong> ${issueInfo.titulo}
                 </div>
                 <div class="timesheet-form-group">
                     <label for="timesheet-description">Descripción del trabajo:</label>
-                    <textarea id="timesheet-description" placeholder="Describe el trabajo realizado...">${issueInfo.titulo}</textarea>
+                    <textarea id="timesheet-description" placeholder="Describe el trabajo realizado...">${
+                      issueInfo.titulo
+                    }</textarea>
                 </div>
                 <div class="timesheet-form-group">
                     <label for="timesheet-hours">Tiempo trabajado:</label>
@@ -482,7 +521,9 @@
                 </div>
                 <div class="timesheet-form-group">
                     <label for="timesheet-date">Fecha:</label>
-                    <input type="date" id="timesheet-date" value="${new Date().toISOString()}">
+                    <input type="date" id="timesheet-date" value="${
+                      new Date().toISOString().split("T")[0]
+                    }">
                 </div>
                 <div class="timesheet-buttons">
                     <button class="timesheet-btn timesheet-btn-primary" id="timesheet-submit">✅ Crear Parte</button>
@@ -492,180 +533,200 @@
                 <div id="timesheet-status"></div>
             `;
 
-        document.body.appendChild(overlay);
-        document.body.appendChild(popup);
+    document.body.appendChild(overlay);
+    document.body.appendChild(popup);
 
-        const configButton = document.getElementById('setup-config')
+    const configButton = document.getElementById("setup-config");
 
-        const timeField = document.getElementById('timesheet-description');
-        timeField.focus();
+    const timeField = document.getElementById("timesheet-description");
+    timeField.focus();
 
-        configButton.addEventListener('click', showConfigMenu);
-        timeField.addEventListener('input', function() {
-            const value = this.value.trim();
-            if (value) {
-                const decimal = parseTimeToDecimal(value);
-                if (decimal !== null) {
-                    if (/^\d*\.?\d+$/.test(value)) {
-                        this.style.borderColor = '#28a745';
-                        this.title = `= ${formatDecimalToTime(decimal)}`;
-                    } else {
-                        this.style.borderColor = '#28a745';
-                        this.title = `= ${decimal.toFixed(2)} horas`;
-                    }
-                } else {
-                    this.style.borderColor = '#dc3545';
-                    this.title = 'Formato inválido';
-                }
-            } else {
-                this.style.borderColor = '#ddd';
-                this.title = '';
-            }
-        });
-
-        document.getElementById('timesheet-cancel').addEventListener('click', closeTimesheetPopup);
-        overlay.addEventListener('click', closeTimesheetPopup);
-        document.getElementById('timesheet-odoo').addEventListener('click', () => {
-            window.open(`${CONFIG.ODOO_URL}/web#view_type=list&model=account.analytic.line&action=976`)
-        });
-        document.getElementById('timesheet-submit').addEventListener('click', async () => {
-            const description = document.getElementById('timesheet-description').value.trim();
-            const timeInput = document.getElementById('timesheet-hours').value.trim();
-            let date = document.getElementById('timesheet-date').value;
-            let datetime = formatDate(date)
-
-            if (!description) {
-                showStatus('Por favor, introduce una descripción', 'error');
-                return;
-            }
-
-            if (!timeInput) {
-                showStatus('Por favor, introduce el tiempo trabajado', 'error');
-                return;
-            }
-
-            // Convertir tiempo a decimal
-            const hours = parseTimeToDecimal(timeInput);
-            if (hours === null) {
-                showStatus('Formato de tiempo inválido. Usa HH:MM (ej: 2:30) o decimal (ej: 2.5)', 'error');
-                return;
-            }
-
-            if (hours <= 0 || hours > 24) {
-                showStatus('El tiempo debe estar entre 0 y 24 horas', 'error');
-                return;
-            }
-
-            await createTimesheetEntry(issueInfo, description, hours, formatDate(date).split(" ")[0], datetime);
-        });
-
-        // Cerrar con ESC
-        document.addEventListener('keydown', function escHandler(e) {
-            if (e.key === 'Escape') {
-                closeTimesheetPopup();
-                document.removeEventListener('keydown', escHandler);
-            }
-        });
-    }
-
-    function closeTimesheetPopup() {
-        const overlay = document.querySelector('.timesheet-overlay');
-        const popup = document.querySelector('.timesheet-popup');
-        if (overlay) overlay.remove();
-        if (popup) popup.remove();
-    }
-
-    function showStatus(message, type = 'loading') {
-        const statusDiv = document.getElementById('timesheet-status');
-        statusDiv.className = `timesheet-${type}`;
-        statusDiv.textContent = message;
-    }
-    
-    function formatDate(date){
-        if (date == Null) return Null;
-        const year = date.getFullYear();
-        const month = date.getMonth();
-        const day = date.getDay();
-        const locale_time = date.toLocaleTimeString();
-
-        return `${year}/${month}/${day} ${locale_time}`;
-    }
-    
-    async function createTimesheetEntry(issueInfo, description, hours, date, datetime) {
-        try {
-            showStatus('🔄 Conectando con Odoo...', 'loading');
-
-            const authenticated = await odooRPC.authenticate();
-            if (!authenticated) {
-                showStatus('❌ Error de autenticación. ¿Estás logueado en Odoo?', 'error');
-                return;
-            }
-
-            showStatus('🔍 Buscando proyecto...', 'loading');
-
-            const projects = await odooRPC.nameSearch(
-                'project.project',
-                issueInfo.proyecto,
-                [['allow_timesheets', '=', true]]
-            );
-
-            if (!projects || projects.length === 0) {
-                showStatus(`❌ No se encontró el proyecto: ${issueInfo.proyecto}`, 'error');
-                return;
-            }
-
-            const projectId = projects[0][0];
-            const projectName = projects[0][1];
-
-            showStatus('🔍 Buscando tarea...', 'loading');
-
-            let taskId = null;
-            const tasks = await odooRPC.nameSearch(
-                'project.task',
-                `#${issueInfo.tarea}`,
-                [['project_id', '=', projectId]]
-            );
-
-            if (tasks && tasks.length > 0) {
-                taskId = tasks[0][0];
-            } else {
-                const altTasks = await odooRPC.nameSearch(
-                    'project.task',
-                    issueInfo.tarea,
-                    [['project_id', '=', projectId]]
-                );
-
-                if (altTasks && altTasks.length > 0) {
-                    taskId = altTasks[0][0];
-                } else {
-                    showStatus(`⚠️ No se encontró la tarea #${issueInfo.tarea}. Creando entrada sin tarea específica...`, 'loading');
-                }
-            }
-
-            showStatus('💾 Creando parte de horas...', 'loading');
-
-            const timesheetId = await odooRPC.createTimesheetEntry(
-                projectId,
-                taskId,
-                description,
-                hours,
-                date,
-                datetime
-            );
-
-            if (timesheetId) {
-                showStatus(`✅ ¡Parte de horas creado exitosamente! (ID: ${timesheetId})`, 'success');
-
-                setTimeout(() => {
-                    closeTimesheetPopup();
-                }, 3000);
-            } else {
-                showStatus('❌ Error al crear el parte de horas', 'error');
-            }
-
-        } catch (error) {
-            console.error('Error creando timesheet:', error);
-            showStatus(`❌ Error: ${error.message}`, 'error');
+    configButton.addEventListener("click", showConfigMenu);
+    timeField.addEventListener("input", function () {
+      const value = this.value.trim();
+      if (value) {
+        const decimal = parseTimeToDecimal(value);
+        if (decimal !== null) {
+          if (/^\d*\.?\d+$/.test(value)) {
+            this.style.borderColor = "#28a745";
+            this.title = `= ${formatDecimalToTime(decimal)}`;
+          } else {
+            this.style.borderColor = "#28a745";
+            this.title = `= ${decimal.toFixed(2)} horas`;
+          }
+        } else {
+          this.style.borderColor = "#dc3545";
+          this.title = "Formato inválido";
         }
+      } else {
+        this.style.borderColor = "#ddd";
+        this.title = "";
+      }
+    });
+
+    document
+      .getElementById("timesheet-cancel")
+      .addEventListener("click", closeTimesheetPopup);
+    overlay.addEventListener("click", closeTimesheetPopup);
+    document.getElementById("timesheet-odoo").addEventListener("click", () => {
+      window.open(
+        `${CONFIG.ODOO_URL}/web#view_type=list&model=account.analytic.line&action=976`
+      );
+    });
+    document
+      .getElementById("timesheet-submit")
+      .addEventListener("click", async () => {
+        const description = document
+          .getElementById("timesheet-description")
+          .value.trim();
+        const timeInput = document
+          .getElementById("timesheet-hours")
+          .value.trim();
+        let date = document.getElementById("timesheet-date").value;
+        let datetime = formatDate(date);
+
+        if (!description) {
+          showStatus("Por favor, introduce una descripción", "error");
+          return;
+        }
+
+        if (!timeInput) {
+          showStatus("Por favor, introduce el tiempo trabajado", "error");
+          return;
+        }
+
+        // Convertir tiempo a decimal
+        const hours = parseTimeToDecimal(timeInput);
+        if (hours === null) {
+          showStatus(
+            "Formato de tiempo inválido. Usa HH:MM (ej: 2:30) o decimal (ej: 2.5)",
+            "error"
+          );
+          return;
+        }
+
+        if (hours <= 0 || hours > 24) {
+          showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
+          return;
+        }
+
+        await createTimesheetEntry(
+          issueInfo,
+          description,
+          hours,
+          date,
+          datetime
+        );
+      });
+
+    // Cerrar con ESC
+    document.addEventListener("keydown", function escHandler(e) {
+      if (e.key === "Escape") {
+        closeTimesheetPopup();
+        document.removeEventListener("keydown", escHandler);
+      }
+    });
+  }
+
+  function closeTimesheetPopup() {
+    const overlay = document.querySelector(".timesheet-overlay");
+    const popup = document.querySelector(".timesheet-popup");
+    if (overlay) overlay.remove();
+    if (popup) popup.remove();
+  }
+
+  function showStatus(message, type = "loading") {
+    const statusDiv = document.getElementById("timesheet-status");
+    statusDiv.className = `timesheet-${type}`;
+    statusDiv.textContent = message;
+  }
+
+  function formatDate(date) {
+    let datetime = new Date(date).toISOString();
+    datetime = datetime.split("T");
+
+    return `${datetime[0]} ${datetime[1].split(".")[0]}`;
+  }
+
+  async function createTimesheetEntry(
+    issueInfo,
+    description,
+    hours,
+    date,
+    datetime
+  ) {
+    try {
+      showStatus("🔄 Conectando con Odoo...", "loading");
+
+      const authenticated = await odooRPC.authenticate();
+      if (!authenticated) {
+        showStatus(
+          "❌ Error de autenticación. ¿Estás logueado en Odoo?",
+          "error"
+        );
+        return;
+      }
+
+      showStatus("🔍 Buscando tarea...", "loading");
+
+      const project = await odooRPC.odooSearch("gitlab.project.project", [
+        ["project_url", "=", issueInfo.project],
+      ]);
+
+      if (!project || project.length === 0) {
+        showStatus(
+          `❌ No se encontró el projecto ${
+            issueInfo.project.split("/")[issueInfo.project.length - 1]
+          } o no está sincronizada en odoo`,
+          "error"
+        );
+        return;
+      }
+
+      const projectId = project.get("result").get("recods").get("odoo_id")[0];
+
+      showStatus("🔍 Buscando tarea...", "loading");
+
+      let taskId = null;
+      const tasks = await odooRPC.odooSearch("gitlab.project.task", [
+        ["gitlab_url", "=", issueInfo.tarea],
+      ]);
+
+      if (!tasks || tasks.length === 0) {
+        showStatus(
+          `⚠️ No se encontró la tarea #${
+            issueInfo.tarea.split("/")[issueInfo.tarea.length - 1]
+          }. Creando entrada sin tarea específica...`,
+          "loading"
+        );
+      }
+
+      showStatus("💾 Creando parte de horas...", "loading");
+
+      const timesheetId = await odooRPC.createTimesheetEntry(
+        projectId,
+        taskId,
+        description,
+        hours,
+        date,
+        datetime
+      );
+
+      if (timesheetId) {
+        showStatus(
+          `✅ ¡Parte de horas creado exitosamente! (ID: ${timesheetId})`,
+          "success"
+        );
+
+        setTimeout(() => {
+          closeTimesheetPopup();
+        }, 3000);
+      } else {
+        showStatus("❌ Error al crear el parte de horas", "error");
+      }
+    } catch (error) {
+      console.error("Error creando timesheet:", error);
+      showStatus(`❌ Error: ${error.message}`, "error");
     }
+  }
 })();
