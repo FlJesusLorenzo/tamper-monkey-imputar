@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Imputaciones con OdooRPC - Popup dev
 // @namespace    http://tampermonkey.net/
-// @version      1.2.4
+// @version      1.2.5
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -349,7 +349,7 @@
       return new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
           method: "POST",
-          url: `${this.url}/web/dataset/call_kw/${model}/name_search`,
+          url: `${this.url}/web/dataset/search_read`,
           headers: {
             "Content-Type": "application/json",
           },
