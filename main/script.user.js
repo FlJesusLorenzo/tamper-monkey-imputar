@@ -683,7 +683,7 @@
         return;
       }
 
-      const projectId = project["records"](0)["odoo_id");
+      const projectId = project["records"](0)["odoo_id"];
 
       showStatus("🔍 Buscando tarea...", "loading");
 
