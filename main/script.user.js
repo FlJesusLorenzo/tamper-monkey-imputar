@@ -450,7 +450,7 @@
       document.querySelector("h1.title");
     const titulo = titleElement
       ? titleElement.textContent.trim()
-      : `Issue #${tarea.split("/")[tarea.length - 1]}`;
+      : `Issue #${tarea.split("/")[tarea.split("/").length - 1]}`;
 
     return { proyecto, tarea, titulo };
   }
@@ -500,11 +500,11 @@
                 <div class="timesheet-info">
                     <strong>Proyecto:</strong> ${
                       issueInfo.proyecto.split("/")[
-                        issueInfo.proyecto.length - 1
+                        issueInfo.proyecto.split("/").length - 1
                       ]
                     }<br>
                     <strong>Tarea:</strong> #${
-                      issueInfo.tarea.split("/")[issueInfo.tarea.length - 1]
+                      issueInfo.tarea.split("/")[issueInfo.tarea.split("/").length - 1]
                     }<br>
                     <strong>Título:</strong> ${issueInfo.titulo}
                 </div>
@@ -670,20 +670,20 @@
       showStatus("🔍 Buscando tarea...", "loading");
 
       const project = await odooRPC.odooSearch("gitlab.project.project", [
-        ["project_url", "=", issueInfo.project],
+        ["project_url", "=", issueInfo.proyecto],
       ]);
 
       if (!project || project.length === 0) {
         showStatus(
           `❌ No se encontró el projecto ${
-            issueInfo.project.split("/")[issueInfo.project.length - 1]
+            issueInfo.proyecto.split("/")[issueInfo.proyecto.split("/").length - 1]
           } o no está sincronizada en odoo`,
           "error"
         );
         return;
       }
 
-      const projectId = project.get("result").get("recods").get("odoo_id")[0];
+      const projectId = project["records"](0)["odoo_id");
 
       showStatus("🔍 Buscando tarea...", "loading");
 
@@ -695,7 +695,7 @@
       if (!tasks || tasks.length === 0) {
         showStatus(
           `⚠️ No se encontró la tarea #${
-            issueInfo.tarea.split("/")[issueInfo.tarea.length - 1]
+            issueInfo.tarea.split("/")[issueInfo.tarea.split("/").length - 1]
           }. Creando entrada sin tarea específica...`,
           "loading"
         );
