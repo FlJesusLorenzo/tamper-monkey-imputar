@@ -399,6 +399,7 @@
         name: description,
         unit_amount: parseFloat(hours),
         date: today,
+        date_time: datetime,
         datetime: datetime,
         user_id: this.uid,
       };
