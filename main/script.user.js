@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup dev
+// @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
 // @version      1.2.0
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
