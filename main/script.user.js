@@ -345,7 +345,7 @@
       });
     }
 
-    async odooSearch(model, domain = [], limit = 21, fields = "odoo_id") {
+    async odooSearch(model, domain = [], limit = 21, fields = ["odoo_id"]) {
       return new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
           method: "POST",
@@ -683,7 +683,7 @@
         return;
       }
 
-      const projectId = project["records"](0)["odoo_id"];
+      const projectId = project.records[0].odoo_id;
 
       showStatus("🔍 Buscando tarea...", "loading");
 
