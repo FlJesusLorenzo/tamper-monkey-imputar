@@ -687,7 +687,6 @@
 
       showStatus("🔍 Buscando tarea...", "loading");
 
-      let taskId = null;
       const tasks = await odooRPC.odooSearch("gitlab.project.task", [
         ["gitlab_url", "=", issueInfo.tarea],
       ]);
@@ -700,6 +699,8 @@
           "loading"
         );
       }
+      const taskId = tasks.records[0].odoo_id[0];
+      
 
       showStatus("💾 Creando parte de horas...", "loading");
 
