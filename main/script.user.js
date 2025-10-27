@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup dev
+// @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      2.1.0
-// @description  Create timesheet entries directly from GitLab using OdooRPC popup
+// @version      2.0.0
+// @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
 // @author       Jesús Lorenzo
 // @match        https://git.*
 // @include      */issues/*
@@ -12,8 +12,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/dev/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/dev/script.user.js
+// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
 // ==/UserScript==
 
 (function () {
