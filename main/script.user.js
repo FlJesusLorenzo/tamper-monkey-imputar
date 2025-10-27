@@ -70,7 +70,7 @@
       Genera una descripción para la imputación de horas que cumpla estos requisitos:
       1.  **Breve:** 20 palabras aproximadamente, evita el uso de frases en primera persona y el uso del nombre del usuario, manteniendo las frases de manera impersonal
       2.  **Descriptiva:** Debe quedar claro qué se ha hecho y cuál ha sido el progreso.
-      3.  **Enfocada:** Céntrate solo en la "Actividad Realizada Hoy y los comentarios del usuario, en caso de que el usuario no haya realizado ningun comentario o ningun movimiento sobre la tarea deberás mostrar un mensaje de que no se puede imputar sobre una tarea en la que no has generado comentario o movimiento".`;
+      3.  **Enfocada:** Céntrate solo en la "Actividad Realizada Hoy y los comentarios del usuario, no debes generar descripcion sobre el contexto de la tarea nunca, solo sobre los comentarios y movimientos, en caso de que el usuario no haya realizado ningun comentario o ningun movimiento sobre la tarea deberás mostrar un mensaje de que no se puede imputar sobre una tarea en la que no has generado comentario o movimiento".`;
 
     console.log("Iniciando petición directa a la API de Gemini...");
 
