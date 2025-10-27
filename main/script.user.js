@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup
+// @name         Imputaciones con OdooRPC - Popup dev
 // @namespace    http://tampermonkey.net/
-// @version      1.2.0
+// @version      2.1.0
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -12,8 +12,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/dev/script.user.js
+// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/dev/script.user.js
 // ==/UserScript==
 
 (function () {
@@ -25,73 +25,190 @@
     GITLAB_DOMAIN: "git.tuempresa.com",
     LANG: "es_ES",
     TIMEZONE: "Europe/Madrid",
+    API_KEY: GM_getValue("api_key"),
   };
-
-  function showInitialSetup() {
-    const dbName = CONFIG.DB_NAME;
-    const odooUrl = CONFIG.ODOO_URL;
-    if (!dbName || dbName === "" || odooUrl.includes("example.com")) {
-      const userDb = prompt(
-        `Configuración inicial:\n\nIntroduce el nombre de tu base de datos Odoo:`
-      );
-      const userUrl = prompt(
-        `Introduce la URL de tu instancia Odoo:\n(ejemplo: https://mi-empresa.odoo.com)`
-      );
-      if (userDb && userUrl) {
-        GM_setValue("db_name", userDb);
-        GM_setValue("odoo_url", userUrl.replace(/\/$/, ""));
-        alert("¡Configuración guardada! El script está listo para usar.");
-        location.reload();
-        return false;
-      } else {
-        alert(
-          "Configuración cancelada. El script no funcionará hasta que se configure."
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  if (!showInitialSetup()) {
-    return;
-  }
 
   CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
   CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
+  CONFIG.API_KEY = GM_getValue("api_key", CONFIG.API_KEY);
 
-  function showConfigMenu() {
-    const currentUrl = GM_getValue("odoo_url", "");
-    const currentDb = GM_getValue("db_name", "");
+  async function generateIADescription(element, button) {
+    let userAK = CONFIG.API_KEY;
+    if (!userAK || userAK === "") {
+      showConfigMenu();
+      showStatus(
+        "Configurar api_key",
+        "error",
+        document.getElementById("config-status")
+      );
+      return;
+    }
+    button.classList.add("cargando");
+    button.disabled = true;
 
-    const newUrl = prompt(
-      `URL actual de Odoo: ${currentUrl}\n\nIntroduce nueva URL (o deja vacío para mantener):`,
-      currentUrl
-    );
+    let issue_desc = document.querySelector(
+      ".detail-page-description"
+    ).textContent;
+    let day = document.getElementById("timesheet-date").value;
+    let comments = document.getElementById("notes-list").textContent;
+    let user = document
+      .getElementById("disclosure-6")
+      .getElementsByClassName("gl-font-bold")[0].textContent;
+
+    const promptText = `Actúa como un desarrollador de software que debe resumir su trabajo del día para una imputación de horas. Tu objetivo es crear una descripción breve pero clara, basada únicamente en la actividad de hoy.
+      **Día**: ${day}
+      **Usuario**: ${user}
+
+      **Contexto de la Tarea:**
+      ${issue_desc}
+
+      *   **Comentarios y Actividad:**
+      ${comments}
+
+      **Instrucciones para la Generación:**
+
+      Genera una descripción para la imputación de horas que cumpla estos requisitos:
+      1.  **Breve:** 20 palabras aproximadamente, evita el uso de frases en primera persona y el uso del nombre del usuario, manteniendo las frases de manera impersonal
+      2.  **Descriptiva:** Debe quedar claro qué se ha hecho y cuál ha sido el progreso.
+      3.  **Enfocada:** Céntrate solo en la "Actividad Realizada Hoy y los comentarios del usuario, en caso de que el usuario no haya realizado ningun comentario o ningun movimiento sobre la tarea deberás mostrar un mensaje de que no se puede imputar sobre una tarea en la que no has generado comentario o movimiento".`;
+
+    console.log("Iniciando petición directa a la API de Gemini...");
+
+    GM_xmlhttpRequest({
+      method: "POST",
+      url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${userAK}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: promptText,
+              },
+            ],
+          },
+        ],
+      }),
+      onload: function (response) {
+        button.classList.remove("cargando");
+        button.disabled = false;
+        if (response.status >= 200 && response.status < 300) {
+          try {
+            const data = JSON.parse(response.responseText);
+            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (text) {
+              console.log("Respuesta recibida:", text);
+              element.textContent = text.trim();
+            } else {
+              console.error(
+                "La respuesta de la API no tuvo el formato esperado:",
+                data
+              );
+              alert(
+                "Se recibió una respuesta de la API, pero no contenía texto. Revisa la consola."
+              );
+            }
+          } catch (e) {
+            console.error("Error al parsear la respuesta JSON:", e);
+            alert(
+              "No se pudo procesar la respuesta del servidor. Revisa la consola."
+            );
+          }
+        } else {
+          console.error(
+            "La API devolvió un error:",
+            response.status,
+            response.responseText
+          );
+          alert(
+            `Error de la API: ${response.status}. Revisa la consola para más detalles.`
+          );
+        }
+      },
+      onerror: function (response) {
+        button.classList.remove("cargando");
+        button.disabled = false;
+        console.error("Error de red o de conexión:", response);
+        alert(
+          "No se pudo conectar con la API de Gemini. Revisa tu conexión a internet o la consola."
+        );
+      },
+    });
+  }
+
+  function closeConfigPopup() {
+    const overlay = document.querySelector(".config-overlay");
+    const popup = document.querySelector(".config-popup");
+    if (overlay) overlay.remove();
+    if (popup) popup.remove();
+  }
+
+  function saveConfig() {
+    const newUrl = document.getElementById("timesheet-url").value;
     if (newUrl !== null && newUrl.trim() !== "") {
       GM_setValue("odoo_url", newUrl.replace(/\/$/, ""));
     }
 
-    const newDb = prompt(
-      `Base de datos actual: ${currentDb}\n\nIntroduce nueva base de datos (o deja vacío para mantener):`,
-      currentDb
-    );
+    const newDb = document.getElementById("timesheet-db").value;
     if (newDb !== null && newDb.trim() !== "") {
       GM_setValue("db_name", newDb);
     }
 
-    alert("Configuración actualizada. Recarga la página para aplicar cambios.");
+    const newApiKey = document.getElementById("timesheet-api-key").value;
+    if (newApiKey !== null && newApiKey.trim() !== "") {
+      GM_setValue("api_key", newApiKey);
+    }
+    showStatus(
+      "Configuración actualizada.",
+      "success",
+      document.getElementById("config-status")
+    );
+    setTimeout(closeConfigPopup, 1000);
   }
 
-  window.resetOdooConfig = function () {
-    if (confirm("¿Estás seguro de que quieres resetear la configuración?")) {
-      GM_setValue("db_name", "");
-      GM_setValue("odoo_url", "");
-      alert(
-        "Configuración reseteada. Recarga la página para configurar de nuevo."
-      );
-    }
-  };
+  function showConfigMenu() {
+    const currentUrl = CONFIG.ODOO_URL;
+    const currentDb = CONFIG.DB_NAME;
+    const currentApiKey = CONFIG.API_KEY || "";
+
+    const overlay = document.createElement("div");
+    overlay.className = "timesheet-overlay config-overlay";
+
+    const popup = document.createElement("div");
+    popup.className = "timesheet-popup config-popup";
+    popup.id = "config-popup";
+
+    popup.innerHTML = `
+                <h3>Config</h3>
+                <div class="timesheet-form-group">
+                    <label for="timesheet-url">URL:</label>
+                    <input type="text" id="timesheet-url" placeholder="https://www.example.com" value="${currentUrl}" /><br />
+                    <label for="timesheet-db">Database:</label>
+                    <input type="text" id="timesheet-db" value="${currentDb}"/><br />
+                    <label for="timesheet-api-key">API_KEY:</label>
+                    <input type="text" id="timesheet-api-key" placeholder="AIzaSy....." value="${currentApiKey}" /><br />
+                </div>
+                <div class="timesheet-buttons">
+                    <button class="timesheet-btn timesheet-btn-primary" id="config-submit">✅ Guardar</button>
+                    <button class="timesheet-btn timesheet-btn-secondary" id="config-cancel">❌ Cancelar</button>
+                </div>
+                <div id="config-status"></div>
+            `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(popup);
+
+    document
+      .getElementById("config-submit")
+      .addEventListener("click", saveConfig);
+    document
+      .getElementById("config-cancel")
+      .addEventListener("click", closeConfigPopup);
+  }
+
   const link = document.createElement("link");
   link.href =
     "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap";
@@ -243,6 +360,104 @@
             margin-bottom: 15px;
             font-size: 12px;
             color: #666;
+        }
+
+        #ia-button {
+          margin: 5px;
+          padding: 0px 10px;
+          border: none;
+          outline: none;
+          color: rgb(255, 255, 255);
+          background: #111;
+          cursor: pointer;
+          position: relative;
+          z-index: 0;
+          border-radius: 10px;
+          user-select: none;
+          -webkit-user-select: none;
+          touch-action: manipulation;
+        }
+
+        #ia-button:before {
+          content: "";
+          background: linear-gradient(
+            45deg,
+            #ff0000,
+            #ff7300,
+            #fffb00,
+            #48ff00,
+            #00ffd5,
+            #002bff,
+            #7a00ff,
+            #ff00c8,
+            #ff0000
+          );
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          background-size: 400%;
+          z-index: -1;
+          filter: blur(5px);
+          -webkit-filter: blur(5px);
+          width: calc(100% + 4px);
+          height: calc(100% + 4px);
+          animation: glowing-ia-button 20s linear infinite;
+          transition: opacity 0.3s ease-in-out;
+          border-radius: 10px;
+        }
+        #ia-button:hover{
+          animation: glowing-ia-button 10s linear infinite;
+        }
+        @keyframes glowing-ia-button {
+          0% {
+            background-position: 0 0;
+          }
+          50% {
+            background-position: 400% 0;
+          }
+          100% {
+            background-position: 0 0;
+          }
+        }
+
+        #ia-button:after {
+          z-index: -1;
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: #222;
+          left: 0;
+          top: 0;
+          border-radius: 10px;
+        }
+        #ia-button .spinner {
+          display: none;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #333;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: spin 1s linear infinite;
+        }
+        #ia-button.cargando .texto-original {
+          visibility: hidden;
+        }
+
+        #ia-button.cargando .spinner {
+          display: block;
+        }
+        @keyframes spin {
+          0% {
+              transform: translate(-50%, -50%) rotate(0deg);
+          }
+          100% {
+              transform: translate(-50%, -50%) rotate(360deg);
+          }
         }
     `);
 
@@ -488,11 +703,9 @@
   async function showTimesheetPopup() {
     const issueInfo = getIssueInfo();
 
-    // Crear overlay
     const overlay = document.createElement("div");
     overlay.className = "timesheet-overlay";
 
-    // Crear popup
     const popup = document.createElement("div");
     popup.className = "timesheet-popup";
 
@@ -505,12 +718,20 @@
                       ]
                     }<br>
                     <strong>Tarea:</strong> #${
-                      issueInfo.tarea.split("/")[issueInfo.tarea.split("/").length - 1]
+                      issueInfo.tarea.split("/")[
+                        issueInfo.tarea.split("/").length - 1
+                      ]
                     }<br>
                     <strong>Título:</strong> ${issueInfo.titulo}
                 </div>
                 <div class="timesheet-form-group">
-                    <label for="timesheet-description">Descripción del trabajo:</label>
+                    <div style="display:flex; justify-content: space-between;">
+                      <label for="timesheet-description" style="align-content: center">Descripción del trabajo:</label>
+                      <button id="ia-button">
+                        <span class="texto-original">Generar con IA</span>
+                        <span class="spinner"></span>
+                      </button>
+                    </div>
                     <textarea id="timesheet-description" placeholder="Describe el trabajo realizado...">${
                       issueInfo.titulo
                     }</textarea>
@@ -536,14 +757,20 @@
 
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
-
+    if (CONFIG.ODOO_URL == "" || CONFIG.DB_NAME == "") {
+      showConfigMenu();
+    }
     const configButton = document.getElementById("setup-config");
+    const iaButton = document.getElementById("ia-button");
+    const descriptionField = document.getElementById("timesheet-description");
+    const hoursField = document.getElementById("timesheet-hours");
+    descriptionField.focus();
 
-    const timeField = document.getElementById("timesheet-description");
-    timeField.focus();
-
+    iaButton.addEventListener("click", async function () {
+      await generateIADescription(descriptionField, this);
+    });
     configButton.addEventListener("click", showConfigMenu);
-    timeField.addEventListener("input", function () {
+    hoursField.addEventListener("input", function () {
       const value = this.value.trim();
       if (value) {
         const decimal = parseTimeToDecimal(value);
@@ -620,9 +847,12 @@
         );
       });
 
-    // Cerrar con ESC
     document.addEventListener("keydown", function escHandler(e) {
       if (e.key === "Escape") {
+        if (document.getElementById("config-popup")) {
+          closeConfigPopup();
+          return;
+        }
         closeTimesheetPopup();
         document.removeEventListener("keydown", escHandler);
       }
@@ -636,8 +866,12 @@
     if (popup) popup.remove();
   }
 
-  function showStatus(message, type = "loading") {
-    const statusDiv = document.getElementById("timesheet-status");
+  function showStatus(
+    message,
+    type = "loading",
+    element = document.getElementById("timesheet-status")
+  ) {
+    const statusDiv = element;
     statusDiv.className = `timesheet-${type}`;
     statusDiv.textContent = message;
   }
@@ -677,7 +911,9 @@
       if (!project || project.length === 0) {
         showStatus(
           `❌ No se encontró el projecto ${
-            issueInfo.proyecto.split("/")[issueInfo.proyecto.split("/").length - 1]
+            issueInfo.proyecto.split("/")[
+              issueInfo.proyecto.split("/").length - 1
+            ]
           } o no está sincronizada en odoo`,
           "error"
         );
@@ -701,7 +937,6 @@
         );
       }
       const taskId = tasks.records[0].odoo_id[0];
-      
 
       showStatus("💾 Creando parte de horas...", "loading");
 
