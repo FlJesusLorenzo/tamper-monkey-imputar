@@ -12,6 +12,7 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 - ✅ Soporte para formatos de tiempo decimal y HH:MM
 - ✅ Configuración de fecha personalizable
 - ✅ Conexión directa con Odoo para crear imputaciones
+- ✅ Opcion de crear descripcion por medio de Google AI
 
 ## Requisitos Previos
 
@@ -40,6 +41,8 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
+4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://ai.google.dev/gemini-api/docs/api-key?hl=es-419
+
 ## Uso
 
 ### Funcionamiento Automático
@@ -57,7 +60,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 <img width="490" height="579" alt="image" src="https://github.com/user-attachments/assets/e5805f3c-bc41-4518-a2bd-20178ce37c85" />
 
 #### 1. Configuración
-- Botón de configuración para establecer la base de datos y la url
+- Botón de configuración para establecer la base de datos y la url y la clave api de Gemini
 
 #### 2. Información Automática
 - **Proyecto**: Nombre del repositorio/proyecto
@@ -65,6 +68,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 
 #### 3. Campos de Entrada
 - **Descripción**: Campo de texto para describir el trabajo realizado
+- (Nuevo) **🤖 Descripcion por IA**: Genera la descripcion de la tarea por medio de Google AI (solo funciona si se agrega una clave valida)
 - **Horas Dedicadas**: Acepta dos formatos:
   - **Formato decimal**: `2.5` (2 horas y 30 minutos)
   - **Formato HH:MM**: `02:30` (2 horas y 30 minutos)
