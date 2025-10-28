@@ -218,20 +218,20 @@
   // Estilos para el popup
   GM_addStyle(`
         .timesheet-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 2px solid #007bff;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 10000;
-            font-family: Poppins, Arial, sans-serif;
-            min-width: 400px;
-            max-width: 500px;
-        }
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 10000;
+    font-family: Poppins, Arial, sans-serif;
+    min-width: 400px;
+    max-width: 500px;
+}
 
         .timesheet-overlay {
             position: fixed;
@@ -458,10 +458,12 @@
           100% {
               transform: translate(-50%, -50%) rotate(360deg);
           }
+        }
         .tab.active {
             background: white;
             color: #333;
             font-weight: 500;
+        }
         .form-container {
             width: 100%;
             max-width: 450px;
@@ -475,8 +477,8 @@
             padding: 15px 20px;
             text-align: center;
             cursor: pointer;
-            color: #000
-            background: #FFF
+            color: #000;
+            background: #FFF;
             border: none;
             font-size: 14px;
             transition: all 0.3s ease;
