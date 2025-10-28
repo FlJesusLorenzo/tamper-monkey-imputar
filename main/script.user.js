@@ -475,6 +475,8 @@
             padding: 15px 20px;
             text-align: center;
             cursor: pointer;
+            color: #000
+            background: #FFF
             border: none;
             font-size: 14px;
             transition: all 0.3s ease;
@@ -955,7 +957,9 @@
             .getElementById("timesheet-description")
             .value.trim();
 
-          timeInput = document.getElementById("timesheet-hours").value.trim();
+          let timeInput = document
+            .getElementById("timesheet-hours")
+            .value.trim();
           date = document.getElementById("timesheet-date").value;
 
           if (!description) {
