@@ -19,7 +19,7 @@
 (function () {
   "use strict";
 
-  const CONFIG = {
+  let CONFIG = {
     ODOO_URL: GM_getValue("odoo_url", "https://tu-odoo.example.com"),
     DB_NAME: GM_getValue("db_name", ""),
     GITLAB_DOMAIN: "git.tuempresa.com",
@@ -27,10 +27,11 @@
     TIMEZONE: "Europe/Madrid",
     API_KEY: GM_getValue("api_key"),
   };
-
-  CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
-  CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
-  CONFIG.API_KEY = GM_getValue("api_key", CONFIG.API_KEY);
+  function setGlobalConfig(){
+    CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
+    CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
+    CONFIG.API_KEY = GM_getValue("api_key", CONFIG.API_KEY);
+  }
 
   async function generateIADescription(element, button) {
     let userAK = CONFIG.API_KEY;
@@ -199,6 +200,7 @@ comments: ${comments}
       "success",
       document.getElementById("config-status")
     );
+    setGlobalConfig()
     setTimeout(closeConfigPopup, 1000);
   }
 
@@ -576,6 +578,9 @@ comments: ${comments}
             body {
                 padding: 10px;
             }
+        }
+        #form-inicio_fin{
+          display:flex;
         }
     `);
 
