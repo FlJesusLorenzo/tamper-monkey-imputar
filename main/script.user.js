@@ -525,7 +525,7 @@ comments: ${comments}
         }
         .form-content {
             padding: 30px;
-            border: solid 1px black;
+            border: solid 1px #A0A0A0;
             border-top: 0;
         }
 
