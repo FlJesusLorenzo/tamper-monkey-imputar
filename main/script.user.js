@@ -578,7 +578,7 @@ comments: ${comments}
                 padding: 10px;
             }
         }
-        #form-inicio_fin{
+        #form-inicio_fin.active{
           display:flex;
         }
     `);
