@@ -514,9 +514,10 @@ comments: ${comments}
             cursor: pointer;
             color: #000;
             background: #A0A0A0;
-            border: none;
+            border: black 1px solid;
             font-size: 14px;
             transition: all 0.3s ease;
+            border-top: 0;
         }
         .tab.active {
             background: #FFF;
