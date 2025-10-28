@@ -32,16 +32,17 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 ## Configuración
 
 Una vez instalado el script, la primera vez que entremos en una Issue de GitLab nos pedirá una serie de configuraciones
-1. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
-<img width="408" height="247" alt="image" src="https://github.com/user-attachments/assets/0c71a130-035d-4337-a477-b56272cc0ed8" />
 
-2. Especifica la URL completa de tu instancia de Odoo
+1. Especifica la URL completa de tu instancia de Odoo
    - ⚠️ **Importante**: La URL debe comenzar con `http://` o `https://`
-<img width="408" height="247" alt="image" src="https://github.com/user-attachments/assets/1cfb9cff-ae5e-4206-9153-c3aa4b9b6a56" />
+2. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
 4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://ai.google.dev/gemini-api/docs/api-key?hl=es-419
+
+<img width="406" height="392" alt="Captura de pantalla 2025-10-28 213653" src="https://github.com/user-attachments/assets/cd304ed3-0f65-42a6-b5fe-597175440cba" />
+
 
 ## Uso
 
@@ -57,7 +58,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 
 ### Interfaz de Usuario
 
-<img width="490" height="579" alt="image" src="https://github.com/user-attachments/assets/e5805f3c-bc41-4518-a2bd-20178ce37c85" />
+<img width="499" height="744" alt="imagen" src="https://github.com/user-attachments/assets/252082b0-6332-4978-b22f-1b5616e806a8" /><img width="446" height="218" alt="imagen" src="https://github.com/user-attachments/assets/e50470cf-f01d-49ae-895a-d57aa6519b73" />
 
 #### 1. Configuración
 - Botón de configuración para establecer la base de datos y la url y la clave api de Gemini
@@ -72,6 +73,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 - **Horas Dedicadas**: Acepta dos formatos:
   - **Formato decimal**: `2.5` (2 horas y 30 minutos)
   - **Formato HH:MM**: `02:30` (2 horas y 30 minutos)
+- **Hora inicio - Hora final: se deberá establecer la hora a la que hemos empezado la tarea y la hora en la que hemos terminado
 - **Fecha**: Fecha de la imputación (por defecto: fecha actual)
 
 #### 4. Botones de Acción
@@ -79,7 +81,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 - **❌ Cerrar**: Cierra el popup sin realizar acciones
 - **📊 Ver Imputaciones**: Redirige a la página de imputaciones de Odoo
 
-## Formatos de Tiempo Soportados
+## Formatos de Tiempo Soportados en Horas dedicadas
 
 | Formato | Ejemplo | Descripción |
 |---------|---------|-------------|
@@ -110,6 +112,9 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 3. **Formato de tiempo no reconocido**
    - Usa formato decimal (ej: `2.5`) o HH:MM (ej: `02:30`)
    - No uses formatos como `2h 30m`
+
+4. **El botón no aparece**
+   - Revisa si tienes bien configurado correctamente la extensión tampermonkey, puedes revisar fallos comunes en: [Tampermonkey FAQ](https://www.tampermonkey.net/faq.php))
 
 ## Contribuciones
 
