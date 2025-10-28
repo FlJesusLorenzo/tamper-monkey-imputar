@@ -454,7 +454,10 @@ comments: ${comments}
             background-position: 0 0;
           }
         }
-
+        input::placeholder{
+          color: #000;
+          opacity: 0.5;
+        }
         #ia-button:after {
           z-index: -1;
           content: "";
