@@ -525,7 +525,6 @@ comments: ${comments}
         }
         .form-content {
             padding: 30px;
-            min-height: 250px;
         }
 
         .form-section {
@@ -875,13 +874,15 @@ comments: ${comments}
                                 </div>
                             </div>
                             <div id="form-inicio_fin" class="form-section">
-                                <div class="timesheet-form-group">
-                                    <label for="timesheet-start">Hora inicio:</label>
-                                    <input type="text" id="timesheet-start" placeholder="ej: 12:00" pattern="^([0-9][0-9]:[0-5][0-9])$">
-                                </div>
-                                <div class="timesheet-form-group">
-                                    <label for="timesheet-end">Hora final:</label>
-                                    <input type="text" id="timesheet-end" placeholder="ej: 12:30" pattern="^([0-9][0-9]:[0-5][0-9])$">
+                                <div style="display:flex;">
+                                  <div class="timesheet-form-group">
+                                      <label for="timesheet-start">Hora inicio:</label>
+                                      <input type="text" id="timesheet-start" placeholder="ej: 12:00" pattern="^([0-9][0-9]:[0-5][0-9])$">
+                                  </div>
+                                  <div class="timesheet-form-group">
+                                      <label for="timesheet-end">Hora final:</label>
+                                      <input type="text" id="timesheet-end" placeholder="ej: 12:30" pattern="^([0-9][0-9]:[0-5][0-9])$">
+                                  </div>
                                 </div>
                                 <small style="color: #666; font-size: 11px;">El ejemplo actual nos generaria un reporte de 30 minutos</small>
                             </div>
