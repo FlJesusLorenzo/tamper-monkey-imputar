@@ -497,11 +497,6 @@ comments: ${comments}
               transform: translate(-50%, -50%) rotate(360deg);
           }
         }
-        .tab.active {
-            background: white;
-            color: #333;
-            font-weight: 500;
-        }
         .form-container {
             width: 100%;
             max-width: 450px;
@@ -509,6 +504,8 @@ comments: ${comments}
         }
         .form-tabs {
             display: flex;
+            border: solid 1px #A0A0A0;
+            border-bottom: 0;
         }
         .tab {
             flex: 1;
@@ -516,13 +513,13 @@ comments: ${comments}
             text-align: center;
             cursor: pointer;
             color: #000;
-            background: #FFF;
+            background: #A0A0A0;
             border: none;
             font-size: 14px;
             transition: all 0.3s ease;
         }
         .tab.active {
-            background: #A0A0A0;
+            background: #FFF;
             color: #333;
             font-weight: 500;
         }
