@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup - dev
+// @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      2.0.1
+// @version      2.1.0
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -12,8 +12,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/mejoras_horas/main/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/mejoras_horas/main/script.user.js
+// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
 // ==/UserScript==
 
 (function () {
@@ -55,22 +55,55 @@
       .getElementById("disclosure-6")
       .getElementsByClassName("gl-font-bold")[0].textContent;
 
-    const promptText = `Actúa como un desarrollador de software que debe resumir su trabajo del día para una imputación de horas. Tu objetivo es crear una descripción breve pero clara, basada únicamente en la actividad de hoy.
-      **Día**: ${day}
-      **Usuario**: ${user}
+    const promptText = `
+    # PERSONA
+Actúa como un desarrollador de software experto resumiendo tu trabajo del día para un sistema de imputación de horas. Tu comunicación debe ser técnica, concisa y objetiva.
 
-      **Contexto de la Tarea:**
-      ${issue_desc}
+# OBJETIVO
+Generar una descripción breve y precisa para una imputación de horas, basándote exclusivamente en la actividad y los comentarios registrados hoy.
 
-      *   **Comentarios y Actividad:**
-      ${comments}
+# CONTEXTO DE DATOS
+*   **day**: El día al que corresponde el trabajo.
+*   **user**: El usuario que realizó el trabajo (debes ignorar este dato en la respuesta).
+*   **issue_desc**: Descripción general de la tarea. **IMPORTANTE**: Debes ignorar esta información para generar el resumen. Es solo contexto.
+*   **comments**: La única fuente de verdad. Contiene los comentarios, commits y cambios de estado realizados por el usuario durante el día.
 
-      **Instrucciones para la Generación:**
+# REGLAS PARA LA GENERACIÓN
+1.  **Exclusividad**: Basa tu respuesta ÚNICAMENTE en la información de comments. IGNORA por completo el contexto de issue_desc.
+2.  **Impersonal y Objetivo**: No uses la primera persona ("hice", "revisé", "mi trabajo fue"). No menciones al usuario. Describe la acción de forma directa.
+3.  **Brevedad y Claridad**: El resumen debe tener entre 15 y 25 palabras. Debe quedar claro qué se hizo y qué progreso se logró.
+4.  **Enfoque en la Acción**: Resume las acciones clave (análisis, desarrollo, corrección, despliegue, reunión, etc.) mencionadas en los comentarios.
 
-      Genera una descripción para la imputación de horas que cumpla estos requisitos:
-      1.  **Breve:** 20 palabras aproximadamente, evita el uso de frases en primera persona y el uso del nombre del usuario, manteniendo las frases de manera impersonal
-      2.  **Descriptiva:** Debe quedar claro qué se ha hecho y cuál ha sido el progreso.
-      3.  **Enfocada:** Céntrate solo en la "Actividad Realizada Hoy y los comentarios del usuario, no debes generar descripcion sobre el contexto de la tarea nunca, solo sobre los comentarios y movimientos, en caso de que el usuario no haya realizado ningun comentario o ningun movimiento sobre la tarea deberás mostrar un mensaje de que no se puede imputar sobre una tarea en la que no has generado comentario o movimiento".`;
+# CASO ESPECIAL
+*   Si la variable comments está vacía o no contiene información relevante sobre una acción realizada, genera **exactamente** el siguiente mensaje: "No es posible imputar: no se han registrado comentarios ni actividad en la tarea para el día de hoy."
+
+# EJEMPLOS
+
+---
+**EJEMPLO 1: Actividad registrada**
+
+*   **issue_desc**: "Corregir un bug visual en el botón de la página de login."
+*   **comments**: "10:30 - Inicio de análisis del bug. Se replica en entorno local. 14:15 - Se identifica el problema en la hoja de estilos 'login.css'. Se aplica corrección y se sube a la rama 'fix/login-button'. 16:45 - Pruebas realizadas con éxito."
+
+*   **SALIDA GENERADA IDEAL**:
+    "Análisis y replicación de bug visual. Identificación de causa en CSS, aplicación de corrección y subida a la rama 'fix/login-button'."
+---
+**EJEMPLO 2: Sin actividad registrada**
+
+*   **issue_desc**: "Desarrollar la nueva API de usuarios."
+*   **comments**: ""
+
+*   **SALIDA GENERADA IDEAL**:
+    "No es posible imputar: no se han registrado comentarios ni actividad en la tarea para el día de hoy."
+---
+
+# TAREA A REALIZAR
+Genera la descripción para la imputación de horas basándote en los datos que te proporciono a continuación y siguiendo estrictamente todas las reglas y ejemplos.
+day: ${day}
+user: ${user}
+issue_desc: ${issue_desc}
+comments: ${comments}
+    `;
 
     console.log("Iniciando petición directa a la API de Gemini...");
 
