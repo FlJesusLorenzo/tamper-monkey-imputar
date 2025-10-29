@@ -39,7 +39,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
-4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://ai.google.dev/gemini-api/docs/api-key?hl=es-419
+4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://aistudio.google.com/api-keys
 
 <img width="406" height="392" alt="Captura de pantalla 2025-10-28 213653" src="https://github.com/user-attachments/assets/cd304ed3-0f65-42a6-b5fe-597175440cba" />
 
