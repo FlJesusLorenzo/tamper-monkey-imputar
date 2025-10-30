@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      2.1.0
+// @version      2.1.1
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -178,6 +178,7 @@ comments: ${comments}
     const popup = document.querySelector(".config-popup");
     if (overlay) overlay.remove();
     if (popup) popup.remove();
+    document.getElementById("setup-config").addEventListener("click",showConfigMenu)
   }
 
   function saveConfig() {
@@ -205,6 +206,7 @@ comments: ${comments}
   }
 
   function showConfigMenu() {
+    document.getElementById('setup-config').removeEventListener("click",showConfigMenu)
     const currentUrl = CONFIG.ODOO_URL;
     const currentDb = CONFIG.DB_NAME;
     const currentApiKey = CONFIG.API_KEY || "";
@@ -242,6 +244,7 @@ comments: ${comments}
     document
       .getElementById("config-cancel")
       .addEventListener("click", closeConfigPopup);
+    overlay.addEventListener("click", closeConfigPopup)
   }
 
   const link = document.createElement("link");
@@ -575,10 +578,14 @@ comments: ${comments}
             .form-content {
                 padding: 20px;
             }
-            
             body {
                 padding: 10px;
             }
+        }
+        #timesheet-date::-webkit-calendar-picker-indicator{
+            opacity: 0;
+            position: absolute;
+            width: 100%;
         }
     `);
 
@@ -888,7 +895,7 @@ comments: ${comments}
                         </div>
                     </div>
                 </div>
-                <div class="timesheet-form-group">
+                <div class="timesheet-form-group" style="overflow: hidden;">
                     <label for="timesheet-date">Fecha:</label>
                     <input type="date" id="timesheet-date" value="${
                       new Date().toISOString().split("T")[0]
@@ -900,6 +907,11 @@ comments: ${comments}
                     <button href class="timesheet-btn timesheet-btn-info" id="timesheet-odoo"> Ir a Imputaciones en Odoo</button>
                 </div>
                 <div id="timesheet-status"></div>
+                <div id="footer" style="display: flex;align-items: center;justify-content: center;">
+                    <a href="https://github.com/FlJesusLorenzo/tamper-monkey-imputar" style="color: black;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/GitHub_Invertocat_Logo.svg/1024px-GitHub_Invertocat_Logo.svg.png" width="20" /> <span>by Jesús Lorenzo</span>
+                    </a>
+                </div>
             `;
 
     document.body.appendChild(overlay);
@@ -1085,6 +1097,10 @@ comments: ${comments}
 
     // Cerrar con ESC
     document.addEventListener("keydown", function escHandler(e) {
+      if (document.getElementById("config-popup")){
+          closeConfigPopup()
+          return;
+      }
       if (e.key === "Escape") {
         closeTimesheetPopup();
         document.removeEventListener("keydown", escHandler);
