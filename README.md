@@ -34,6 +34,9 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
    - ⚠️ **Importante**: La URL debe comenzar con `http://` o `https://`
 2. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
 
+> [!IMPORTANT]
+> Estas credenciales deberán pedirese a algún administrador del entorno al que nos queramos conectar
+
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
 4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://aistudio.google.com/api-keys
