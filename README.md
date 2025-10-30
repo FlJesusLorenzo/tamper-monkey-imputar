@@ -30,12 +30,12 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 
 
 ## Configuración
+> [!IMPORTANT]
+> Estas credenciales deberán pedirese a algún administrador del entorno al que nos queramos conectar
+
 1. Especifica la URL completa de tu instancia de Odoo
    - ⚠️ **Importante**: La URL debe comenzar con `http://` o `https://`
 2. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
-
-> [!IMPORTANT]
-> Estas credenciales deberán pedirese a algún administrador del entorno al que nos queramos conectar
 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
