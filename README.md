@@ -30,9 +30,6 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 
 
 ## Configuración
-
-Una vez instalado el script, la primera vez que entremos en una Issue de GitLab nos pedirá una serie de configuraciones
-
 1. Especifica la URL completa de tu instancia de Odoo
    - ⚠️ **Importante**: La URL debe comenzar con `http://` o `https://`
 2. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
@@ -40,7 +37,7 @@ Una vez instalado el script, la primera vez que entremos en una Issue de GitLab 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
 
 4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://aistudio.google.com/api-keys
-
+   - Al igual que en el caso de la primera imputación, la primera vez que pulsemos en Generar con IA, 
 <img width="406" height="392" alt="Captura de pantalla 2025-10-28 213653" src="https://github.com/user-attachments/assets/cd304ed3-0f65-42a6-b5fe-597175440cba" />
 
 
