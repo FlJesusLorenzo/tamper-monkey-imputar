@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      2.1.1
+// @version      2.1.2
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -908,7 +908,7 @@ comments: ${comments}
                 </div>
                 <div id="timesheet-status"></div>
                 <div id="footer" style="display: flex;align-items: center;justify-content: center;">
-                    <a href="https://github.com/FlJesusLorenzo/tamper-monkey-imputar" style="color: black;">
+                    <a href="https://github.com/FlJesusLorenzo/tamper-monkey-imputar" target="_blank" style="color: black;">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/GitHub_Invertocat_Logo.svg/1024px-GitHub_Invertocat_Logo.svg.png" width="20" /> <span>by Jesús Lorenzo</span>
                     </a>
                 </div>
@@ -1097,11 +1097,11 @@ comments: ${comments}
 
     // Cerrar con ESC
     document.addEventListener("keydown", function escHandler(e) {
-      if (document.getElementById("config-popup")){
-          closeConfigPopup()
-          return;
-      }
       if (e.key === "Escape") {
+        if (document.getElementById("config-popup")){
+            closeConfigPopup()
+            return;
+        }
         closeTimesheetPopup();
         document.removeEventListener("keydown", escHandler);
       }
