@@ -14,6 +14,8 @@
 // @grant        GM_getResourceText
 // @resource ai_prompt https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/prompt-ia.txt
 // @resource css https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/style.css
+// @resource popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/popup.html
+// @resource config-popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/config-popup.html
 // @require      https://github.com/FlJesusLorenzo/tamper-monkey-imputar/blob/dev/main/utils.js
 // @require      https://github.com/FlJesusLorenzo/tampermonkey-odoo-rpc/raw/refs/heads/main/OdooRPC.js
 // @connect      *
@@ -23,42 +25,22 @@
 
 (function () {
   "use strict";
+  let odooRPC = null;
+  const link = document.createElement("link");
   let CONFIG = {
-    ODOO_URL: GM_getValue("odoo_url", "https://tu-odoo.example.com"),
-    DB_NAME: GM_getValue("db_name", ""),
     GITLAB_DOMAIN: "git.tuempresa.com",
     LANG: "es_ES",
     TIMEZONE: "Europe/Madrid",
-    API_KEY: GM_getValue("api_key"),
   };
 
-
-  function setGlobalConfig(){
-    CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
-    CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
-    CONFIG.API_KEY = GM_getValue("api_key", CONFIG.API_KEY);
-  }
-
-
-  const link = document.createElement("link");
-  link.href =
-    "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap";
-  link.rel = "stylesheet";
-  document.head.appendChild(link);
-
-  // Estilos para el popup
   GM_addStyle(GM_getResorceText("css"));
-  
-  let odooRPC = null;
-  odooRPC = new OdooRPC(
-    CONFIG.ODOO_URL,
-    CONFIG.DB,
-    {
-      lang: CONFIG.LANG,
-      tz: CONFIG.TIMEZONE,
-    },
-  );
+  setGlobalConfig()
 
+  document.head.appendChild(link);
+  
+  link.rel = "stylesheet";
+  link.href = "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap";
+  
   window.addEventListener("load", function () {
     const sidebar = document.querySelector(
       '.issuable-sidebar-header div[data-testid="sidebar-todo"]'
@@ -79,23 +61,6 @@
       sidebar.appendChild(button);
     }
   });
-
-  function getIssueInfo() {
-    let proyecto = `${document.location.origin}${document
-      .querySelector('div[data-testid="nav-item-link-label"')
-      .parentElement.getAttribute("href")}`;
-    const tarea = window.location.href.split("#")[0];
-
-    const titleElement =
-      document.querySelector('h1[data-testid="issue-title-text"]') ||
-      document.querySelector(".issue-title-text") ||
-      document.querySelector("h1.title");
-    const titulo = titleElement
-      ? titleElement.textContent.trim()
-      : `Issue #${tarea.split("/")[tarea.split("/").length - 1]}`;
-
-    return { proyecto, tarea, titulo };
-  }
 
   async function enviarImputacion() {
     const active = document.querySelectorAll("div.active");
@@ -129,9 +94,7 @@
         showStatus("El tiempo debe estar entre 0 y 24 horas", "error");
         return;
       }
-      
     } else if (active[1].id == "form-inicio_fin") {
-      
       description = description.value.trim();
       date = date.value;
       const timeStartInput = document
@@ -183,7 +146,6 @@
         return;
       }
     }
-    
     await createTimesheetEntry(issueInfo, description, hours, date);
   }
 
@@ -278,13 +240,6 @@
     });
   }
 
-  function closeTimesheetPopup() {
-    const overlay = document.querySelector(".timesheet-overlay");
-    const popup = document.querySelector(".timesheet-popup");
-    if (overlay) overlay.remove();
-    if (popup) popup.remove();
-  }
-
   async function createTimesheetEntry(
     issueInfo,
     description,
@@ -348,6 +303,7 @@
           "success"
         );
         setTimeout(() => {
+          closeConfigPopup()
           closeTimesheetPopup();
         }, 3000);
       } else {
@@ -357,6 +313,13 @@
       console.error("Error creando timesheet:", error);
       showStatus(`❌ Error: ${error.message}`, "error");
     }
+  }
+  
+  function closeTimesheetPopup() {
+    const overlay = document.querySelector(".timesheet-overlay");
+    const popup = document.querySelector(".timesheet-popup");
+    if (overlay) overlay.remove();
+    if (popup) popup.remove();
   }
   
   function closeConfigPopup() {
@@ -392,37 +355,21 @@
   }
 
   function showConfigMenu() {
-    document.getElementById('setup-config').removeEventListener("click",showConfigMenu)
     const currentUrl = CONFIG.ODOO_URL;
     const currentDb = CONFIG.DB_NAME;
     const currentApiKey = CONFIG.API_KEY || "";
-
     const overlay = document.createElement("div");
-    overlay.className = "timesheet-overlay config-overlay";
-
     const popup = document.createElement("div");
+
+    overlay.className = "timesheet-overlay config-overlay";
     popup.className = "timesheet-popup config-popup";
     popup.id = "config-popup";
-
-    popup.innerHTML = `
-                <h3>Config</h3>
-                <div class="timesheet-form-group">
-                    <label for="timesheet-url">URL:</label>
-                    <input type="text" id="timesheet-url" placeholder="https://www.example.com" value="${currentUrl}" /><br />
-                    <label for="timesheet-db">Database:</label>
-                    <input type="text" id="timesheet-db" value="${currentDb}"/><br />
-                    <label for="timesheet-api-key">API_KEY:</label>
-                    <input type="text" id="timesheet-api-key" placeholder="AIzaSy....." value="${currentApiKey}" /><br />
-                </div>
-                <div class="timesheet-buttons">
-                    <button class="timesheet-btn timesheet-btn-primary" id="config-submit">✅ Guardar</button>
-                    <button class="timesheet-btn timesheet-btn-secondary" id="config-cancel">❌ Cancelar</button>
-                </div>
-                <div id="config-status"></div>
-            `;
+    popup.innerHTML = interpolate("config-popup", {currentUrl, currentDb,currentApiKey});
 
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
+    
+    overlay.addEventListener("click", closeConfigPopup)
 
     document
       .getElementById("config-submit")
@@ -430,7 +377,36 @@
     document
       .getElementById("config-cancel")
       .addEventListener("click", closeConfigPopup);
-    overlay.addEventListener("click", closeConfigPopup)
+    document.getElementById('setup-config').removeEventListener("click",showConfigMenu)
   }
 
+  function setGlobalConfig(){
+    CONFIG.ODOO_URL = GM_getValue("odoo_url", CONFIG.ODOO_URL);
+    CONFIG.DB_NAME = GM_getValue("db_name", CONFIG.DB_NAME);
+    CONFIG.API_KEY = GM_getValue("api_key", CONFIG.API_KEY);
+    odooRPC = new OdooRPC(
+      CONFIG.ODOO_URL,
+      CONFIG.DB,
+      {
+        lang: CONFIG.LANG,
+        tz: CONFIG.TIMEZONE,
+      },
+    );
+  }
+
+  function getIssueInfo() {
+    let proyecto = `${document.location.origin}${document
+      .querySelector('div[data-testid="nav-item-link-label"')
+      .parentElement.getAttribute("href")}`;
+    const tarea = window.location.href.split("#")[0];
+
+    const titleElement =
+      document.querySelector('h1[data-testid="issue-title-text"]') ||
+      document.querySelector(".issue-title-text") ||
+      document.querySelector("h1.title");
+    const titulo = titleElement
+      ? titleElement.textContent.trim()
+      : `Issue #${tarea.split("/")[tarea.split("/").length - 1]}`;
+    return { proyecto, tarea, titulo };
+  }
 })();
