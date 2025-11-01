@@ -14,6 +14,7 @@
 // @grant        GM_getResourceText
 // @resource ai_prompt https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/prompt-ia.txt
 // @resource css https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/style.css
+// @require      https://github.com/FlJesusLorenzo/tamper-monkey-imputar/blob/dev/main/utils.js
 // @require      https://github.com/FlJesusLorenzo/tampermonkey-odoo-rpc/raw/refs/heads/main/OdooRPC.js
 // @connect      *
 // @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
@@ -265,35 +266,6 @@ comments: ${comments}
       : `Issue #${tarea.split("/")[tarea.split("/").length - 1]}`;
 
     return { proyecto, tarea, titulo };
-  }
-
-  function parseTimeToDecimal(timeInput) {
-    timeInput = timeInput.trim();
-
-    if (/^\d*\.?\d+$/.test(timeInput)) {
-      const decimal = parseFloat(timeInput);
-      return decimal > 0 && decimal <= 24 ? decimal : null;
-    }
-
-    const timeRegex = /^(\d{1,2}):([0-5]\d)$/;
-    const match = timeInput.match(timeRegex);
-
-    if (match) {
-      const hours = parseInt(match[1], 10);
-      const minutes = parseInt(match[2], 10);
-
-      if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
-        return hours + minutes / 60;
-      }
-    }
-
-    return null;
-  }
-
-  function formatDecimalToTime(decimal) {
-    const hours = Math.floor(decimal);
-    const minutes = Math.round((decimal - hours) * 60);
-    return `${hours}:${minutes.toString().padStart(2, "0")}`;
   }
 
   async function showTimesheetPopup() {
@@ -583,23 +555,6 @@ comments: ${comments}
     if (popup) popup.remove();
   }
 
-  function showStatus(
-    message,
-    type = "loading",
-    element = document.getElementById("timesheet-status")
-  ) {
-    const statusDiv = element;
-    statusDiv.className = `timesheet-${type}`;
-    statusDiv.textContent = message;
-  }
-
-  function formatDate(date) {
-    let datetime = new Date(date).toISOString();
-    datetime = datetime.split("T");
-
-    return `${datetime[0]} ${datetime[1].split(".")[0]}`;
-  }
-
   async function createTimesheetEntry(
     issueInfo,
     description,
@@ -682,13 +637,5 @@ comments: ${comments}
       console.error("Error creando timesheet:", error);
       showStatus(`❌ Error: ${error.message}`, "error");
     }
-  }
-
-  function switchTab(activeTab, inactiveTab, activeForm, inactiveForm) {
-    activeTab.classList.add("active");
-    inactiveTab.classList.remove("active");
-
-    activeForm.classList.add("active");
-    inactiveForm.classList.remove("active");
   }
 })();
