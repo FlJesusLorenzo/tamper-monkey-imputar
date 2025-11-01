@@ -62,3 +62,10 @@ Generar una descripción breve y precisa para una imputación de horas, basándo
 *   **SALIDA GENERADA IDEAL**:
     "Análisis y replicación de bug visual. Identificación de causa en CSS."
 ---
+
+# TAREA A REALIZAR
+Genera la descripción para la imputación de horas basándote en los datos que te proporciono a continuación y siguiendo estrictamente todas las reglas y ejemplos.
+day: ${day}
+user: ${user}
+issue_desc: ${issue_desc}
+comments: ${comments}
