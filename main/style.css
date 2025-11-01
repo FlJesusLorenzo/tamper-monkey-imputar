@@ -1,0 +1,326 @@
+.timesheet-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 10000;
+    font-family: Poppins, Arial, sans-serif;
+    min-width: 400px;
+    max-width: 500px;
+}
+
+.timesheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+
+.timesheet-popup h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    text-align: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.timesheet-form-group {
+    margin-bottom: 15px;
+}
+
+.timesheet-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.timesheet-form-group input,
+.timesheet-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.timesheet-form-group input:focus,
+.timesheet-form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.timesheet-form-group small {
+    display: block;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.timesheet-form-group textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.timesheet-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.timesheet-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.timesheet-btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.timesheet-btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.timesheet-btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.timesheet-btn-info {
+    background-color: #7d756c;
+    color: white;
+}
+
+.timesheet-btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.timesheet-btn-info:hover {
+    background-color: #625d54;
+}
+
+.timesheet-loading {
+    text-align: center;
+    color: #007bff;
+    font-style: italic;
+}
+
+.timesheet-success {
+    text-align: center;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.timesheet-error {
+    text-align: center;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.timesheet-info {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+#ia-button {
+  margin: 5px;
+  padding: 0px 10px;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+#ia-button:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-ia-button 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+#ia-button:hover{
+  animation: glowing-ia-button 10s linear infinite;
+}
+@keyframes glowing-ia-button {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+input::placeholder{
+  color: #000;
+  opacity: 0.5;
+}
+#ia-button:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+#ia-button .spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #333;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 1s linear infinite;
+}
+#ia-button.cargando .texto-original {
+  visibility: hidden;
+}
+
+#ia-button.cargando .spinner {
+  display: block;
+}
+@keyframes spin {
+  0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+.form-container {
+    width: 100%;
+    max-width: 450px;
+    overflow: hidden;
+}
+.form-tabs {
+    display: flex;
+    border: solid 1px #A0A0A0;
+    border-bottom: 0;
+}
+.tab {
+    flex: 1;
+    padding: 15px 20px;
+    text-align: center;
+    cursor: pointer;
+    color: #000;
+    background: #A0A0A0;
+    border: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.tab.active {
+    background: #FFF;
+    color: #333;
+    font-weight: 500;
+}
+.form-content {
+    padding: 30px;
+    border: solid 1px #A0A0A0;
+    border-top: 0;
+}
+
+.form-section {
+    display: none;
+}
+
+.form-section.active {
+    display: block;
+}
+
+input[type="time"]::-webkit-datetime-edit {
+    color: #333;
+}
+
+input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+    background: transparent;
+}
+
+input[type="time"]::-webkit-datetime-edit-text {
+    color: #666;
+    padding: 0 0.3em;
+}
+
+input[type="time"]::-webkit-datetime-edit-month-field,
+input[type="time"]::-webkit-datetime-edit-day-field,
+input[type="time"]::-webkit-datetime-edit-year-field,
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field {
+    color: #333;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    .form-content {
+        padding: 20px;
+    }
+    body {
+        padding: 10px;
+    }
+}
