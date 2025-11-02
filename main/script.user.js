@@ -357,8 +357,8 @@
   }
 
   function showConfigMenu() {
-    const currentUrl = CONFIG.ODOO_URL;
-    const currentDb = CONFIG.DB_NAME;
+    const currentUrl = CONFIG.ODOO_URL || "";
+    const currentDb = CONFIG.DB_NAME || "";
     const currentApiKey = CONFIG.API_KEY || "";
     const overlay = document.createElement("div");
     const popup = document.createElement("div");
