@@ -160,7 +160,7 @@
       GM_getResourceText("popup"),
       {
         project: issueInfo.proyecto.split("/")[issueInfo.proyecto.split("/").length - 1],
-        issue: issueInfo.terea.split("/")[issueInfo.terea.split("/").length - 1],
+        issue: issueInfo.tarea.split("/")[issueInfo.tarea.split("/").length - 1],
         title: issueInfo.titulo,
         date: new Date().toISOString().split("T")[0],
       }
