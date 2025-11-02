@@ -62,7 +62,7 @@
     }
   });
 
-  async function enviarImputacion() {
+  async function enviarImputacion(issueInfo) {
     const active = document.querySelectorAll("div.active");
     let description = document.getElementById("timesheet-description");
     let date = document.getElementById("timesheet-date");
@@ -194,8 +194,10 @@
     hourEnd.addEventListener("input", checkFormat);
     overlay.addEventListener("click", closeTimesheetPopup);
     cancelButton.addEventListener("click", closeTimesheetPopup);
-    submitButton.addEventListener("click", await enviarImputacion);
 
+    submitButton.addEventListener("click", await function() {
+      enviarImputacion(issueInfo)
+    });
     iaButton.addEventListener("click", async function () {
       if (!CONFIG.API_KEY || CONFIG.API_KEY === "") {
         showConfigMenu();
