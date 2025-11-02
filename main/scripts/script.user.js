@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Imputaciones con OdooRPC - Popup dev
+// @name         Imputaciones con OdooRPC - Popup
 // @namespace    http://tampermonkey.net/
-// @version      2.1.2
+// @version      2.2.0
 // @description  Create timesheet entries directly from GitLab using OdooRPC popup posibilidad de generar la descripción por IA
 // @author       Jesús Lorenzo
 // @match        https://git.*
@@ -12,15 +12,15 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
-// @resource ai_prompt https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/prompt-ia.txt
-// @resource css https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/style.css
-// @resource popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/popup.html
-// @resource config-popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/config-popup.html
-// @require      https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/dev/main/utils.js
+// @resource ai_prompt https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/prompts/prompt-ia.txt
+// @resource css https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/css/style.css
+// @resource popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/html/popup.html
+// @resource config-popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/html/config-popup.html
+// @require      https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/scripts/utils.js
 // @require      https://raw.githubusercontent.com/FlJesusLorenzo/tampermonkey-odoo-rpc/refs/heads/main/OdooRPC.js
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/scripts/script.user.js
+// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/scripts/script.user.js
 // ==/UserScript==
 
 (function () {
