@@ -33,7 +33,7 @@
     TIMEZONE: "Europe/Madrid",
   };
 
-  GM_addStyle(GM_getResorceText("css"));
+  GM_addStyle(GM_getResourceText("css"));
   setGlobalConfig()
 
   document.head.appendChild(link);
@@ -364,7 +364,14 @@
     overlay.className = "timesheet-overlay config-overlay";
     popup.className = "timesheet-popup config-popup";
     popup.id = "config-popup";
-    popup.innerHTML = interpolate("config-popup", {currentUrl, currentDb,currentApiKey});
+    popup.innerHTML = interpolate(
+      GM_getResourceText("config-popup"),
+      {
+        currentUrl,
+        currentDb,
+        currentApiKey
+      }
+    );
 
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
