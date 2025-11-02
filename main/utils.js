@@ -4,7 +4,7 @@ function interpolate(str, variables) {
 }
 
 function parseTimeToDecimal(timeInput, timeRegex = false) {
-  const timeRegex = timeRegex || /^(\d{1,2}):([0-5]\d)$/;
+  timeRegex = timeRegex || /^(\d{1,2}):([0-5]\d)$/;
   timeInput = timeInput.trim();
 
   if (/^\d*\.?\d+$/.test(timeInput)) {
