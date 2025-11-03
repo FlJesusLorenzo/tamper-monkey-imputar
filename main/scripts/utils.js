@@ -100,7 +100,7 @@ async function generateIADescription(api_key, element, button, statusElement = n
     onload: function (response) {
       button.classList.remove("cargando");
       button.disabled = false;
-      element.disabled = true;
+      element.disabled = false;
       
       if (response.status >= 200 && response.status < 300) {
         try {
