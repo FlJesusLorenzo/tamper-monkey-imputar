@@ -76,7 +76,7 @@ async function generateIADescription(api_key, element, button, statusElement = n
   button.disabled = true;
   element.disabled = true;
 
-  const promptText = interpolate(GM_getResourceText(ai_prompt), args);
+  const promptText = interpolate(GM_getResourceText("ai_prompt"), args);
 
   console.log("Iniciando petición directa a la API de Gemini...");
 
