@@ -217,7 +217,8 @@
           day: document.getElementById("timesheet-date").value,
           comments: document.getElementById("notes-list").textContent,
           user: document.getElementById("disclosure-6").getElementsByClassName("gl-font-bold")[0].textContent
-        });
+        }
+      );
     });
     dedicateTab.addEventListener("click", () => {
       switchTab(dedicateTab, startEndTab, formTotal, formInicioFin);
