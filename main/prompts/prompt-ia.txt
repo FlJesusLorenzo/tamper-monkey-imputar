@@ -62,3 +62,8 @@ Generar una descripción breve y precisa para una imputación de horas, basándo
 *   **SALIDA GENERADA IDEAL**:
     "Análisis y replicación de bug visual. Identificación de causa en CSS."
 ---
+Información:
+day: ${day}.
+user: ${user}.
+issue_desc: ${issue_desc}.
+comments: ${comments}.
