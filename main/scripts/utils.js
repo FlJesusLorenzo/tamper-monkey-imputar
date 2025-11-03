@@ -71,12 +71,12 @@ function checkFormat() {
     }
   }
 
-async function generateIADescription(api_key, element, button, statusElement = null, ...args) {
+async function generateIADescription(api_key, element, button, statusElement = null, prompt_info = {}, ...args) {
   button.classList.add("cargando");
   button.disabled = true;
   element.disabled = true;
 
-  const promptText = interpolate(GM_getResourceText("ai_prompt"), args);
+  const promptText = interpolate(GM_getResourceText("ai_prompt"), prompt_info);
 
   console.log("Iniciando petición directa a la API de Gemini...");
 
