@@ -30,6 +30,10 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 
 
 ## Configuración
+Para abrir la configuración pulksamos en el botón de imputar y despues en el botón con el engranaje
+<img width="720" height="456" alt="image" src="https://github.com/user-attachments/assets/cfb9636d-7443-4831-ab7e-1129a5fd5831" />
+<img width="406" height="392" alt="Captura de pantalla 2025-10-28 213653" src="https://github.com/user-attachments/assets/cd304ed3-0f65-42a6-b5fe-597175440cba" />
+
 > [!IMPORTANT]
 > Estas credenciales deberán pedirese a algún administrador del entorno al que nos queramos conectar
 
@@ -38,11 +42,14 @@ Este script de Tampermonkey permite imputar horas de trabajo directamente en Odo
 2. Establecer la base de datos sobre la que vamos a crear nuestras imputaciones
 
 3. Durante la primera imputación que hagas se te pedirá permisos de redirección, elige sabiamente la opción que quieres permitir
+   <img width="720" height="475" alt="image" src="https://github.com/user-attachments/assets/9d28aa5b-00d4-4e94-8f1b-2a7685e9f55a" />
 
-4. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave seguir el tutorial: https://aistudio.google.com/api-keys
-   - Al igual que en el caso de la primera imputación, la primera vez que pulsemos en Generar con IA, 
-<img width="406" height="392" alt="Captura de pantalla 2025-10-28 213653" src="https://github.com/user-attachments/assets/cd304ed3-0f65-42a6-b5fe-597175440cba" />
 
+5. (Nuevo) Ahora podemos agregar una clave api de gemini para poder generar las descripciones por medio de IA, para conseguir la clave acceder aquí: https://aistudio.google.com/api-keys
+   <img width="720" height="170" alt="image" src="https://github.com/user-attachments/assets/b9da8f3b-ea68-4816-ba1c-974aed073b77" />
+   <img width="720" height="456" alt="image" src="https://github.com/user-attachments/assets/49b5fe8b-a110-4f5a-b2db-ed914a6b305d" />
+   <img width="480" height="243" alt="image" src="https://github.com/user-attachments/assets/f9bb50fd-58df-4d58-987f-b76aafd5368f" />
+   <img width="480" height="289" alt="image" src="https://github.com/user-attachments/assets/d53ad178-754f-4df6-a73c-96827c0ef54a" />
 
 ## Uso
 
