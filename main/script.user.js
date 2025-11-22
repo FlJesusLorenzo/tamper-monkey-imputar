@@ -32,6 +32,11 @@
     LANG: "es_ES",
     TIMEZONE: "Europe/Madrid",
   };
+  let timeStart = null
+  let timeEnd = null
+  let totalTime = null
+  let description = null
+  let date = null
 
   GM_addStyle(GM_getResourceText("css"));
   setGlobalConfig()
@@ -162,6 +167,10 @@
         project: issueInfo.proyecto.split("/")[issueInfo.proyecto.split("/").length - 1],
         issue: issueInfo.tarea.split("/")[issueInfo.tarea.split("/").length - 1],
         title: issueInfo.titulo,
+        description: description || "",
+        total_time: totalTime || "",
+        start_time: startTime || "",
+        end_time: endTime || "",
         date: new Date().toISOString().split("T")[0],
       }
     );
@@ -178,6 +187,7 @@
     const hoursField = document.getElementById("timesheet-hours");
     const hourStart = document.getElementById("timesheet-start")
     const hourEnd = document.getElementById("timesheet-end")
+    const dateField = document.getElementById("timesheet-date")
     const dedicateTab = document.getElementById("dedicate-tab");
     const startEndTab = document.getElementById("start_end-tab");
     const formTotal = document.getElementById("form-total");
@@ -214,12 +224,19 @@
         this,
         document.getElementById("config-status"),
         {
-          day: document.getElementById("timesheet-date").value,
+          day: dateField.value,
           comments: document.getElementById("notes-list").textContent,
           user: document.getElementById("disclosure-6").getElementsByClassName("gl-font-bold")[0].textContent
         }
       );
     });
+    
+    descriptionField.addEventListener("change", e => description = e.target.value);
+    hoursField.addEventListener("change", e => totalTime = e.target.value);
+    hourStart.addEventListener("change", e => startTime = e.target.value);
+    hourEnd.addEventListener("change", e => endTime = e.target.value);
+    dateField.addEventListener("change", e => date = e.target.value);
+    
     dedicateTab.addEventListener("click", () => {
       switchTab(dedicateTab, startEndTab, formTotal, formInicioFin);
     });
