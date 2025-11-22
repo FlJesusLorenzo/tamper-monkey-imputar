@@ -109,7 +109,7 @@ async function generateIADescription(api_key, element, button, statusElement = n
 
           if (text) {
             console.log("Respuesta recibida:", text);
-            element.textContent = text.trim();
+            element.value = text.trim();
           } else {
             console.error(
               "La respuesta de la API no tuvo el formato esperado:",
