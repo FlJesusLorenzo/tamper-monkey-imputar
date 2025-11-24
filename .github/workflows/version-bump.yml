@@ -1,0 +1,89 @@
+name: PR Version Bump & Merge
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  bump-and-merge:
+    runs-on: ubuntu-latest
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/mergebot')
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout ${{ github.event.issue.number }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Determine Bump Type
+        id: bump-type
+        run: |
+          MESSAGE="${{ github.event.comment.body }}"
+          if [[ "$MESSAGE" == *"/mergebot patch"* ]]; then
+            echo "TYPE=patch" >> $GITHUB_OUTPUT
+          elif [[ "$MESSAGE" == *"/mergebot minor"* ]]; then
+            echo "TYPE=minor" >> $GITHUB_OUTPUT
+          elif [[ "$MESSAGE" == *"/mergebot major"* ]] || [[ "$MESSAGE" == *"/mergebot mayor"* ]]; then
+            echo "TYPE=major" >> $GITHUB_OUTPUT
+          else
+            echo "TYPE=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update Version
+        id: update-version
+        if: steps.bump-type.outputs.TYPE != 'none'
+        env:
+          BUMP_TYPE: ${{ steps.bump-type.outputs.TYPE }}
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = 'main/script.user.js';
+            if (!fs.existsSync(path)) {
+              console.error('File not found: ' + path);
+              process.exit(1);
+            }
+            const content = fs.readFileSync(path, 'utf8');
+            const versionRegex = /\/\/ @version\s+(\d+\.\d+\.\d+)/;
+            const match = content.match(versionRegex);
+            if (!match) {
+              console.error('Version not found');
+              process.exit(1);
+            }
+            let [major, minor, patch] = match[1].split('.').map(Number);
+            const type = process.env.BUMP_TYPE;
+            if (type === 'major') { major++; minor = 0; patch = 0; }
+            else if (type === 'minor') { minor++; patch = 0; }
+            else if (type === 'patch') { patch++; }
+            const newVersion = \`\${major}.\${minor}.\${patch}\`;
+            const newContent = content.replace(versionRegex, \`// @version      \${newVersion}\`);
+            fs.writeFileSync(path, newContent);
+            console.log(\`Bumped version to \${newVersion}\`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, \`NEW_VERSION=\${newVersion}\n\`);
+          "
+
+      - name: Commit and Push
+        if: steps.bump-type.outputs.TYPE != 'none'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add main/script.user.js
+          git commit -m "chore: bump version to ${{ steps.update-version.outputs.NEW_VERSION }}"
+          git push
+
+      - name: Merge PR
+        if: steps.bump-type.outputs.TYPE != 'none'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge ${{ github.event.issue.number }} --merge --delete-branch
