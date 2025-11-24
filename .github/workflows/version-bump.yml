@@ -80,7 +80,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add main/script.user.js
           git commit -m "chore: bump version to ${{ steps.update-version.outputs.NEW_VERSION }}"
-          git push
+          git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
 
       - name: Merge PR
         if: steps.bump-type.outputs.TYPE != 'none'
