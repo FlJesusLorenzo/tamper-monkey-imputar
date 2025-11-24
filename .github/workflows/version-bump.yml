@@ -27,31 +27,14 @@ jobs:
           fetch-depth: 0
 
       - name: Obtener rama del PR
-        run: |
-          git fetch origin pull/${{ github.event.issue.number }}/head:pr-${{ github.event.issue.number }}
-          git checkout pr-${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr checkout ${{ github.event.issue.number }}
 
       - name: Configurar identidad Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Rebase con main
-        id: rebase
-        continue-on-error: true
-        run: |
-          git fetch origin main
-          git rebase origin/main || echo "REBASE_FAILED=true" >> $GITHUB_OUTPUT
-
-      - name: Error rebase → comentar en PR
-        if: ${{ steps.rebase.outputs.REBASE_FAILED == 'true' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
-            -f body="❌ No se pudo hacer **rebase con main**.  
-            Existen conflictos que deben resolverse manualmente."
-          exit 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -123,12 +106,22 @@ jobs:
 
       - name: Commit and Push
         if: steps.bump-type.outputs.TYPE != 'none'
+        continue-on-error: true
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git rebase origin/main || echo "REBASE_FAILED=true" >> $GITHUB_OUTPUT
           git add main/script.user.js
           git commit -m "bump version to ${{ steps.update-version.outputs.NEW_VERSION }}"
-          git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
+          git push
+
+      - name: Error rebase → comentar en PR
+        if: ${{ steps.rebase.outputs.REBASE_FAILED == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f body="❌ No se pudo hacer **rebase con main**.  
+            Existen conflictos que deben resolverse manualmente."
+          exit 1
 
       - name: Merge PR
         id: merge
