@@ -169,8 +169,8 @@
         title: issueInfo.titulo,
         description: description || "",
         total_time: totalTime || "",
-        start_time: startTime || "",
-        end_time: endTime || "",
+        start_time: timeStart || "",
+        end_time: timeEnd || "",
         date: new Date().toISOString().split("T")[0],
       }
     );
@@ -233,8 +233,8 @@
     
     descriptionField.addEventListener("change", e => description = e.target.value);
     hoursField.addEventListener("change", e => totalTime = e.target.value);
-    hourStart.addEventListener("change", e => startTime = e.target.value);
-    hourEnd.addEventListener("change", e => endTime = e.target.value);
+    hourStart.addEventListener("change", e => timeStart = e.target.value);
+    hourEnd.addEventListener("change", e => timeEnd = e.target.value);
     dateField.addEventListener("change", e => date = e.target.value);
     
     dedicateTab.addEventListener("click", () => {
