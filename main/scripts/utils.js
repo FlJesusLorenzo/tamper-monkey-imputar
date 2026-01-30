@@ -1,6 +1,5 @@
-function interpolate(str, variables) {
-  return new Function(...Object.keys(variables), `return \`${str}\`;`)
-      (...Object.values(variables));
+function interpolate(template, data) {
+  return template.replace(/\{(\w+)\}/g, (_, key) => data[key] ?? `{${key}}`);
 }
 
 function parseTimeToDecimal(timeInput, timeRegex = false) {
