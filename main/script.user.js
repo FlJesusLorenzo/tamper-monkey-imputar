@@ -12,15 +12,15 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
-// @resource ai_prompt https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/prompts/prompt-ia.txt
-// @resource css https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/css/style.css
-// @resource popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/html/popup.html
-// @resource config-popup https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/html/config-popup.html
-// @require      https://raw.githubusercontent.com/FlJesusLorenzo/tamper-monkey-imputar/refs/heads/main/main/scripts/utils.js
-// @require      https://raw.githubusercontent.com/FlJesusLorenzo/tampermonkey-odoo-rpc/refs/heads/main/OdooRPC.js
+// @resource ai_prompt https://raw.githubusercontent.com/Zarritas/tamper-monkey-imputar/refs/heads/main/main/prompts/prompt-ia.txt
+// @resource css https://raw.githubusercontent.com/Zarritas/tamper-monkey-imputar/refs/heads/main/main/css/style.css
+// @resource popup https://raw.githubusercontent.com/Zarritas/tamper-monkey-imputar/refs/heads/main/main/html/popup.html
+// @resource config-popup https://raw.githubusercontent.com/Zarritas/tamper-monkey-imputar/refs/heads/main/main/html/config-popup.html
+// @require      https://raw.githubusercontent.com/Zarritas/tamper-monkey-imputar/refs/heads/main/main/scripts/utils.js
+// @require      https://raw.githubusercontent.com/Zarritas/tampermonkey-odoo-rpc/refs/heads/main/OdooRPC.js
 // @connect      *
-// @updateURL    https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
-// @downloadURL  https://github.com/FlJesusLorenzo/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @updateURL    https://github.com/Zarritas/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
+// @downloadURL  https://github.com/Zarritas/tamper-monkey-imputar/raw/refs/heads/main/main/script.user.js
 // ==/UserScript==
 
 (function () {
